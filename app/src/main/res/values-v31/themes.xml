@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Base.Theme.MovieFinder" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="android:windowSplashScreenBackground">@android:color/transparent</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@null</item>
+        <item name="android:splashScreenTheme">@style/Theme.Material3.DayNight.NoActionBar</item>
+    </style>
+
+    <style name="Theme.MovieFinder" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Sesuaikan tema utama Anda di sini -->
+    </style>
+</resources>
