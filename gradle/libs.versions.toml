@@ -1,5 +1,5 @@
 [versions]
-activityKtx = "1.2.2"
+activityKtx = "1.9.3"
 agp = "8.0.2"
 glide = "4.11.0"
 kotlin = "1.8.0"

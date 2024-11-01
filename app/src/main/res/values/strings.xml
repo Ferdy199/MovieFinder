@@ -3,4 +3,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="image_logo">image_logo</string>
+    <string name="title_today_movie">Watch This Today!</string>
+    <string name="title_movie">Title Movie!</string>
+    <string name="title_text2">Relaxed Show Today !</string>
 </resources>
