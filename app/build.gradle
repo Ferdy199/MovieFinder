@@ -15,6 +15,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "API_TOKEN", "\"eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiYjVkN2YwZjc5ZGE0MGFmYjc2NDkzZmJjZTIyNzg1ZSIsIm5iZiI6MTczMDU1NTIwNC41NDI5MzMyLCJzdWIiOiI2MGM5YTM3ODJmY2NlZTAwMjhhMTgzMWUiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.wcg8J1BRGikoAzUq_Q6wYgxKuPTgXw0MgJOSvuBdt94\"")
     }
 
     buildTypes {
@@ -26,6 +27,7 @@ android {
 
     buildFeatures {
         viewBinding true
+        buildConfig = true
     }
 
     compileOptions {
