@@ -1,4 +1,4 @@
-package com.ferdsapp.moviefinder.core.network.model.nowPlaying.movie
+package com.ferdsapp.moviefinder.core.data.model.nowPlaying.movie
 
 import com.google.gson.annotations.SerializedName
 
@@ -12,4 +12,4 @@ data class ListMoviePlaying(
     @field:SerializedName("total_pages")
     var total_pages: Int,
 
-)
+    )

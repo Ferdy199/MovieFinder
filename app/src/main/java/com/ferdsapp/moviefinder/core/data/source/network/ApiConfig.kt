@@ -1,4 +1,4 @@
-package com.ferdsapp.moviefinder.core.network.config
+package com.ferdsapp.moviefinder.core.data.source.network
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
