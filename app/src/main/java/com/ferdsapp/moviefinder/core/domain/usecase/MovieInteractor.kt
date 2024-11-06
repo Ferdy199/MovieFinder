@@ -6,7 +6,5 @@ import com.ferdsapp.moviefinder.core.domain.repository.IMoveRepository
 import kotlinx.coroutines.flow.Flow
 
 class MovieInteractor(private val movieRepository: IMoveRepository) : MovieUseCase {
-    override fun getMoviePlaying(): Flow<ApiResponse<ArrayList<ItemMovePlaying>>> {
-        return movieRepository.getMoviePlaying()
-    }
+    override fun getNowMoviePlaying() =  movieRepository.getMoviePlaying()
 }

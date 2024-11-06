@@ -28,13 +28,15 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <ImageView
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/toolbar_logo"
-                    android:src="@drawable/logo"
                     android:layout_margin="0dp"
-                    android:layout_gravity="start"/>
+                    android:layout_gravity="start"
+                    android:text="Movflix"
+                    android:textStyle="bold"
+                    android:textSize="24sp"/>
 
             </androidx.appcompat.widget.Toolbar>
 

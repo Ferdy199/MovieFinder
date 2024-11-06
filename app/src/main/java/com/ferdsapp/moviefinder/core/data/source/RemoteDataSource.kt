@@ -1,5 +1,6 @@
 package com.ferdsapp.moviefinder.core.data.source
 
+import android.util.Log
 import com.ferdsapp.moviefinder.BuildConfig
 import com.ferdsapp.moviefinder.core.data.model.nowPlaying.movie.ItemMovePlaying
 import com.ferdsapp.moviefinder.core.data.utils.ApiResponse
@@ -34,17 +35,20 @@ class RemoteDataSource private constructor(private val apiService: ApiService) {
                 val response = apiService.getMoviePlayingList(
                     authToken = "Bearer $token",
                     query = mapOf(
-                        "language" to "en",
+                        "language" to "en-US",
                         "page" to "1"
                     )
                 )
-                val dataArray = response.awaitResponse().body()?.results
-                if (dataArray!!.isNotEmpty()){
+                val dataArray = response.results
+                if (dataArray.isNotEmpty()){
+                    Log.d("MovieFinder DataSource", "response not empty")
                     emit(ApiResponse.Success(dataArray))
                 }else{
+                    Log.d("MovieFinder DataSource", "response empty")
                     emit(ApiResponse.Empty)
                 }
             }catch (e: Exception){
+                Log.d("MovieFinder DataSource", "response Error")
                 emit(ApiResponse.Error(e.toString()))
             }
         }.flowOn(Dispatchers.IO)

@@ -13,7 +13,7 @@ interface ApiService {
     suspend fun getMoviePlayingList(
         @Header("Authorization") authToken: String,
         @QueryMap query: Map<String, String>
-    ) : Call<ListMoviePlaying>
+    ) : ListMoviePlaying
 
 
     @GET("3/tv/airing_today")
