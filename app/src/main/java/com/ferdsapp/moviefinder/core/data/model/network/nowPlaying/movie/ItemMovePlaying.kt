@@ -1,4 +1,4 @@
-package com.ferdsapp.moviefinder.core.data.model.nowPlaying.movie
+package com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.movie
 
 import com.google.gson.annotations.SerializedName
 

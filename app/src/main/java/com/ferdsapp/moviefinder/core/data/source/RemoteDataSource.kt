@@ -2,15 +2,14 @@ package com.ferdsapp.moviefinder.core.data.source
 
 import android.util.Log
 import com.ferdsapp.moviefinder.BuildConfig
-import com.ferdsapp.moviefinder.core.data.model.nowPlaying.movie.ItemMovePlaying
-import com.ferdsapp.moviefinder.core.data.utils.ApiResponse
+import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.movie.ItemMovePlaying
+import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.tvShow.ItemTvShowPlaying
 import com.ferdsapp.moviefinder.core.data.source.network.ApiService
-import com.ferdsapp.moviefinder.core.data.model.nowPlaying.movie.ListMoviePlaying
+import com.ferdsapp.moviefinder.core.data.utils.ApiResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import retrofit2.awaitResponse
 
 class RemoteDataSource private constructor(private val apiService: ApiService) {
 
@@ -50,6 +49,32 @@ class RemoteDataSource private constructor(private val apiService: ApiService) {
             }catch (e: Exception){
                 Log.d("MovieFinder DataSource", "response Error")
                 emit(ApiResponse.Error(e.toString()))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun getTvShowNowPlaying(): Flow<ApiResponse<ArrayList<ItemTvShowPlaying>>>{
+        return flow {
+            try {
+                val token = BuildConfig.API_TOKEN
+                val response = apiService.getTvShowPlayingList(
+                    authToken = "Bearer $token",
+                    query = mapOf(
+                        "language" to "en-US",
+                        "page" to "1"
+                    )
+                )
+                val itemData = response.results
+                if (itemData.isNotEmpty()){
+                    Log.d("MovieFinder DataSource", "response tvShow not empty")
+                    emit(ApiResponse.Success(itemData))
+                }else{
+                    Log.d("MovieFinder DataSource", "response tvShow empty")
+                    emit(ApiResponse.Empty)
+                }
+            }catch (e: Exception){
+                Log.d("MovieFinder DataSource", "response tvShow error")
+                emit(ApiResponse.Error(e.message.toString()))
             }
         }.flowOn(Dispatchers.IO)
     }

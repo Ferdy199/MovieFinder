@@ -1,7 +1,7 @@
 package com.ferdsapp.moviefinder.core.data.source.network
 
-import com.ferdsapp.moviefinder.core.data.model.nowPlaying.movie.ListMoviePlaying
-import com.ferdsapp.moviefinder.core.data.model.nowPlaying.tvShow.ListTvShowPlaying
+import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.movie.ListMoviePlaying
+import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.tvShow.ListTvShowPlaying
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -20,5 +20,5 @@ interface ApiService {
     suspend fun getTvShowPlayingList(
         @Header("Authorization") authToken: String,
         @QueryMap query: Map<String, String>
-    ): Call<ListTvShowPlaying>
+    ): ListTvShowPlaying
 }

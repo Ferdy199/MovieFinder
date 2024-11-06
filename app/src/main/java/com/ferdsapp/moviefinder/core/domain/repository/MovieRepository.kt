@@ -1,7 +1,8 @@
 package com.ferdsapp.moviefinder.core.domain.repository
 
 import android.util.Log
-import com.ferdsapp.moviefinder.core.data.model.nowPlaying.movie.ItemMovePlaying
+import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.movie.ItemMovePlaying
+import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.tvShow.ItemTvShowPlaying
 import com.ferdsapp.moviefinder.core.data.source.RemoteDataSource
 import com.ferdsapp.moviefinder.core.data.utils.ApiResponse
 import kotlinx.coroutines.Dispatchers
@@ -50,6 +51,33 @@ class MovieRepository private constructor(
                     }
             }catch (e : Exception){
                 emit(ApiResponse.Error(e.toString()))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun getTvShowPlaying(): Flow<ApiResponse<ArrayList<ItemTvShowPlaying>>> {
+        return flow {
+            try {
+                remoteDataSource
+                    .getTvShowNowPlaying()
+                    .collect { apiResponse ->
+                        when(apiResponse){
+                            is ApiResponse.Success -> {
+                                Log.d("MovieFinder Repository", "response tvShow Success")
+                                emit(ApiResponse.Success(apiResponse.data))
+                            }
+                            is ApiResponse.Empty -> {
+                                Log.d("MovieFinder Repository", "response tvShow Success")
+                                emit(ApiResponse.Empty)
+                            }
+                            is ApiResponse.Error -> {
+                                Log.d("MovieFinder Repository", "response tvShow Success")
+                                emit(ApiResponse.Error(apiResponse.errorMessage))
+                            }
+                        }
+                    }
+            }catch (e: Exception){
+                emit(ApiResponse.Error(e.message.toString()))
             }
         }.flowOn(Dispatchers.IO)
     }

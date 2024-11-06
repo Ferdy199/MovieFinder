@@ -6,4 +6,5 @@ import com.ferdsapp.moviefinder.core.domain.usecase.MovieUseCase
 
 class MainViewModel(movieUseCase: MovieUseCase): ViewModel() {
     val movie = movieUseCase.getNowMoviePlaying().asLiveData()
+    val tvShow = movieUseCase.getTvShowPlaying().asLiveData()
 }
