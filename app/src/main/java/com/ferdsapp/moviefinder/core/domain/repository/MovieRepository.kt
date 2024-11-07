@@ -1,6 +1,7 @@
 package com.ferdsapp.moviefinder.core.domain.repository
 
 import android.util.Log
+import com.ferdsapp.moviefinder.core.data.model.network.login.GetTokenLogin
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.movie.ItemMovePlaying
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.tvShow.ItemTvShowPlaying
 import com.ferdsapp.moviefinder.core.data.source.RemoteDataSource
@@ -67,11 +68,11 @@ class MovieRepository private constructor(
                                 emit(ApiResponse.Success(apiResponse.data))
                             }
                             is ApiResponse.Empty -> {
-                                Log.d("MovieFinder Repository", "response tvShow Success")
+                                Log.d("MovieFinder Repository", "response tvShow Empty")
                                 emit(ApiResponse.Empty)
                             }
                             is ApiResponse.Error -> {
-                                Log.d("MovieFinder Repository", "response tvShow Success")
+                                Log.d("MovieFinder Repository", "response tvShow Error")
                                 emit(ApiResponse.Error(apiResponse.errorMessage))
                             }
                         }
@@ -80,5 +81,27 @@ class MovieRepository private constructor(
                 emit(ApiResponse.Error(e.message.toString()))
             }
         }.flowOn(Dispatchers.IO)
+    }
+
+    override fun getTokenLogin(): Flow<ApiResponse<GetTokenLogin>> {
+        return flow {
+            try {
+                remoteDataSource.getLoginToken().collect { apiResponse ->
+                    when(apiResponse){
+                        is ApiResponse.Success -> {
+                            emit(ApiResponse.Success(apiResponse.data))
+                        }
+                        is ApiResponse.Empty -> {
+                            emit(ApiResponse.Empty)
+                        }
+                        is ApiResponse.Error -> {
+                            emit(ApiResponse.Error(apiResponse.errorMessage))
+                        }
+                    }
+                }
+            }catch (e: Exception){
+                emit(ApiResponse.Error(e.message.toString()))
+            }
+        }
     }
 }

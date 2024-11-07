@@ -2,6 +2,7 @@ package com.ferdsapp.moviefinder.core.data.source
 
 import android.util.Log
 import com.ferdsapp.moviefinder.BuildConfig
+import com.ferdsapp.moviefinder.core.data.model.network.login.GetTokenLogin
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.movie.ItemMovePlaying
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.tvShow.ItemTvShowPlaying
 import com.ferdsapp.moviefinder.core.data.source.network.ApiService
@@ -77,5 +78,20 @@ class RemoteDataSource private constructor(private val apiService: ApiService) {
                 emit(ApiResponse.Error(e.message.toString()))
             }
         }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun getLoginToken(): Flow<ApiResponse<GetTokenLogin>>{
+        return flow {
+            try {
+                val token = BuildConfig.API_TOKEN
+                val response = apiService.getLoginToken(
+                    authToken = "Bearer $token"
+                )
+                emit(ApiResponse.Success(response))
+            }catch (e: Exception){
+                emit(ApiResponse.Error(e.message.toString()))
+
+            }
+        }
     }
 }
