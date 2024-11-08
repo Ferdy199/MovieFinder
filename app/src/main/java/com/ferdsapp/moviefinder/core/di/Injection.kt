@@ -10,8 +10,9 @@ import com.ferdsapp.moviefinder.core.domain.usecase.MovieUseCase
 object Injection {
     fun provideRepository(context: Context) : MovieRepository {
         val remoteDataSource = RemoteDataSource.getInstance(ApiConfig.provideApiService())
+        val sharedPreferences = context.getSharedPreferences("MovieFinder", Context.MODE_PRIVATE)
 
-        return MovieRepository.getInstance(remoteDataSource)
+        return MovieRepository.getInstance(remoteDataSource, sharedPreferences)
     }
 
     fun provideMovieUseCase(context: Context) : MovieUseCase{

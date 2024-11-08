@@ -10,4 +10,6 @@ interface IMoveRepository {
     fun getMoviePlaying(): Flow<ApiResponse<ArrayList<ItemMovePlaying>>>
     fun getTvShowPlaying(): Flow<ApiResponse<ArrayList<ItemTvShowPlaying>>>
     fun getTokenLogin(): Flow<ApiResponse<GetTokenLogin>>
+    fun saveTokenValidate(token: String): Flow<String>
+    fun saveRequestToken(token: String): Flow<String>
 }

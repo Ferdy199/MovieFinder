@@ -1,18 +1,21 @@
 package com.ferdsapp.moviefinder.core.domain.repository
 
+import android.content.SharedPreferences
 import android.util.Log
 import com.ferdsapp.moviefinder.core.data.model.network.login.GetTokenLogin
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.movie.ItemMovePlaying
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.tvShow.ItemTvShowPlaying
 import com.ferdsapp.moviefinder.core.data.source.RemoteDataSource
 import com.ferdsapp.moviefinder.core.data.utils.ApiResponse
+import com.ferdsapp.moviefinder.core.utils.Constant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
 class MovieRepository private constructor(
-    private val remoteDataSource: RemoteDataSource
+    private val remoteDataSource: RemoteDataSource,
+    private val sharedPreferences: SharedPreferences
 ) : IMoveRepository {
     //init manual injection
     companion object{
@@ -20,10 +23,11 @@ class MovieRepository private constructor(
         private var instance: MovieRepository? = null
 
         fun getInstance(
-            remoteDataSource: RemoteDataSource
+            remoteDataSource: RemoteDataSource,
+            sharedPreferences: SharedPreferences
         ) : MovieRepository {
             return instance ?: synchronized(this){
-                instance ?: MovieRepository(remoteDataSource)
+                instance ?: MovieRepository(remoteDataSource, sharedPreferences)
             }
         }
     }
@@ -89,7 +93,11 @@ class MovieRepository private constructor(
                 remoteDataSource.getLoginToken().collect { apiResponse ->
                     when(apiResponse){
                         is ApiResponse.Success -> {
-                            emit(ApiResponse.Success(apiResponse.data))
+                            if (apiResponse.data.success){
+                                emit(ApiResponse.Success(apiResponse.data))
+                            }else{
+                                emit(ApiResponse.Error(apiResponse.data.toString()))
+                            }
                         }
                         is ApiResponse.Empty -> {
                             emit(ApiResponse.Empty)
@@ -101,6 +109,26 @@ class MovieRepository private constructor(
                 }
             }catch (e: Exception){
                 emit(ApiResponse.Error(e.message.toString()))
+            }
+        }
+    }
+
+    override fun saveTokenValidate(token: String): Flow<String> {
+        return flow {
+            try {
+                sharedPreferences.edit().putString(Constant.REQUEST_TOKEN_VALIDATE, token).apply()
+            }catch (e: Exception){
+                Log.d("Movie Repository", e.message.toString())
+            }
+        }
+    }
+
+    override fun saveRequestToken(token: String): Flow<String> {
+        return flow {
+            try {
+                sharedPreferences.edit().putString(Constant.REQUEST_TOKEN, token).apply()
+            }catch (e: Exception){
+                Log.d("Movie Repository", e.message.toString())
             }
         }
     }
