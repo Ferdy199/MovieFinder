@@ -12,6 +12,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 class MovieRepository private constructor(
     private val remoteDataSource: RemoteDataSource,
@@ -94,7 +98,9 @@ class MovieRepository private constructor(
                     when(apiResponse){
                         is ApiResponse.Success -> {
                             if (apiResponse.data.success){
-                                emit(ApiResponse.Success(apiResponse.data))
+                                val dataToken = apiResponse.data
+                                saveRequestToken(dataToken.request_token)
+                                emit(ApiResponse.Success(dataToken))
                             }else{
                                 emit(ApiResponse.Error(apiResponse.data.toString()))
                             }
@@ -113,22 +119,41 @@ class MovieRepository private constructor(
         }
     }
 
-    override fun saveTokenValidate(token: String): Flow<String> {
+    override fun saveTokenValidate(token: String) {
+        sharedPreferences.edit().putString(Constant.REQUEST_TOKEN_VALIDATE, token).apply()
+    }
+
+    override fun saveRequestToken(token: String){
+        sharedPreferences.edit().putString(Constant.REQUEST_TOKEN, token).apply()
+    }
+
+    override fun isSessionValid(session: String): Flow<Boolean>  {
         return flow {
-            try {
-                sharedPreferences.edit().putString(Constant.REQUEST_TOKEN_VALIDATE, token).apply()
-            }catch (e: Exception){
-                Log.d("Movie Repository", e.message.toString())
-            }
+            // Tanggal target sesi dalam format UTC
+            val targetDateString = session
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            dateFormat.timeZone = TimeZone.getTimeZone("UTC")
+
+            // Parsing tanggal target
+            val targetDate = dateFormat.parse(targetDateString)
+
+            // Mendapatkan waktu saat ini
+            val currentDate = Date()
+
+            // Membandingkan apakah waktu saat ini sebelum waktu target
+            emit(currentDate.before(targetDate))
         }
     }
 
-    override fun saveRequestToken(token: String): Flow<String> {
+    override fun getRequestTokenValidate(): Flow<String> {
         return flow {
             try {
-                sharedPreferences.edit().putString(Constant.REQUEST_TOKEN, token).apply()
-            }catch (e: Exception){
-                Log.d("Movie Repository", e.message.toString())
+                val getValidateToken = sharedPreferences.getString(Constant.REQUEST_TOKEN_VALIDATE, "")
+                if (!getValidateToken.isNullOrEmpty()){
+                    emit(getValidateToken)
+                }
+            }catch (e:Exception){
+                Log.d("MovieFinder Repository", "getRequestTokenValidate: ${e.message}")
             }
         }
     }

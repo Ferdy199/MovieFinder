@@ -10,4 +10,7 @@ interface MovieUseCase {
     fun getNowMoviePlaying(): Flow<ApiResponse<ArrayList<ItemMovePlaying>>>
     fun getTvShowPlaying(): Flow<ApiResponse<ArrayList<ItemTvShowPlaying>>>
     fun getLoginToken(): Flow<ApiResponse<GetTokenLogin>>
+    fun getSessionInvalid(session: String): Flow<Boolean>
+    fun saveTokenValidate(token: String)
+    fun getTokenValidate(): Flow<String>
 }

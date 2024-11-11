@@ -13,18 +13,15 @@ import com.ferdsapp.moviefinder.core.utils.Constant
 import com.ferdsapp.moviefinder.databinding.ActivityLoginBinding
 import com.ferdsapp.moviefinder.viewModel.login.LoginViewModel
 import com.ferdsapp.moviefinder.viewModel.utils.ViewModelFactory
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
+    private lateinit var sharedPreferences: SharedPreferences
+    private var tokenExp: String? = null
+    private var tokenValidate: String? = null
     private val loginViewModel: LoginViewModel by viewModels {
         ViewModelFactory.getInstance(this)
     }
-    private lateinit var sharedPreferences: SharedPreferences
-    private var tokenExp: String? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,9 +31,13 @@ class LoginActivity : AppCompatActivity() {
         sharedPreferences = getSharedPreferences("MovieFinder", MODE_PRIVATE)
         var tokenLogin = ""
 
-        val reqToken = sharedPreferences.getString(Constant.REQUEST_TOKEN_VALIDATE, "").toString()
+//        val reqToken = sharedPreferences.getString(Constant.REQUEST_TOKEN_VALIDATE, "").toString()
 
-        if (reqToken.isNullOrEmpty()){
+        loginViewModel.getTokenValidate.observe(this){ token ->
+            tokenValidate = token
+        }
+
+        if (tokenValidate.isNullOrEmpty()){
             loginViewModel.getTokenLogin.observe(this) { apiResponse ->
                 when(apiResponse){
                     is ApiResponse.Success -> {
@@ -59,13 +60,15 @@ class LoginActivity : AppCompatActivity() {
 
 
         binding.loginButton.setOnClickListener {
-            val tokenValidate = sharedPreferences.getString(Constant.REQUEST_TOKEN_VALIDATE, "").toString()
-
+//            val tokenValidate = sharedPreferences.getString(Constant.REQUEST_TOKEN_VALIDATE, "").toString()
+            var sessionValid = false
             if (tokenValidate.isNullOrEmpty()){
                 val intent = Intent(Intent.ACTION_VIEW,Uri.parse("https://www.themoviedb.org/authenticate/$tokenLogin"))
                 startActivity(intent)
             }else{
-                val sessionValid = isSessionValid(tokenValidate)
+                 loginViewModel.getSessionInvalid(tokenValidate!!).observe(this) { key ->
+                     sessionValid = key
+                }
                 when(sessionValid){
                     true -> {
                         Toast.makeText(this, "Session Valid", Toast.LENGTH_SHORT).show()
@@ -78,33 +81,18 @@ class LoginActivity : AppCompatActivity() {
                             startActivity(intent)
                         }
                     }
-
                 }
             }
         }
     }
 
-    private fun isSessionValid(sessionTime: String): Boolean {
-        // Tanggal target sesi dalam format UTC
-        val targetDateString = sessionTime
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        dateFormat.timeZone = TimeZone.getTimeZone("UTC")
-
-        // Parsing tanggal target
-        val targetDate = dateFormat.parse(targetDateString)
-
-        // Mendapatkan waktu saat ini
-        val currentDate = Date()
-
-        // Membandingkan apakah waktu saat ini sebelum waktu target
-        return currentDate.before(targetDate)
-    }
-
     override fun onResume() {
         super.onResume()
         val tokenValidate = sharedPreferences.getString(Constant.REQUEST_TOKEN_VALIDATE, "").toString()
-        if (tokenValidate.isNullOrEmpty() && tokenExp != null){
-            sharedPreferences.edit().putString(Constant.REQUEST_TOKEN_VALIDATE, tokenExp).apply()
+        Log.d("LoginActivity", "onResume: $tokenValidate , $tokenExp")
+        if (tokenValidate.isEmpty() && tokenExp != null){
+            loginViewModel.saveTokenValidate(tokenValidate)
+//            sharedPreferences.edit().putString(Constant.REQUEST_TOKEN_VALIDATE, tokenExp).apply()
         }
     }
 }

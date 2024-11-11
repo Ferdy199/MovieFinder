@@ -87,7 +87,12 @@ class RemoteDataSource private constructor(private val apiService: ApiService) {
                 val response = apiService.getLoginToken(
                     authToken = "Bearer $token"
                 )
-                emit(ApiResponse.Success(response))
+                if (response != null){
+                    emit(ApiResponse.Success(response))
+                }else{
+                    emit(ApiResponse.Empty)
+                }
+
             }catch (e: Exception){
                 emit(ApiResponse.Error(e.message.toString()))
 
