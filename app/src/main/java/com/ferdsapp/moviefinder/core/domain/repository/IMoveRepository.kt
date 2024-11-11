@@ -14,5 +14,5 @@ interface IMoveRepository {
     fun getRequestTokenValidate(): Flow<String>
     fun saveTokenValidate(token: String)
     fun saveRequestToken(token: String)
-
+    fun getRequestToken(): Flow<String>
 }

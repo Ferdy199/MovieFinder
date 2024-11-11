@@ -8,6 +8,7 @@ class MovieInteractor(private val movieRepository: IMoveRepository) : MovieUseCa
     override fun getTvShowPlaying() = movieRepository.getTvShowPlaying()
     override fun getLoginToken() = movieRepository.getTokenLogin()
     override fun getSessionInvalid(session: String) = movieRepository.isSessionValid(session)
-    override fun saveTokenValidate(token: String) = movieRepository.saveRequestToken(token)
+    override fun saveTokenValidate(token: String) = movieRepository.saveTokenValidate(token)
     override fun getTokenValidate() = movieRepository.getRequestTokenValidate()
+    override fun getRequestToken() = movieRepository.getRequestToken()
 }

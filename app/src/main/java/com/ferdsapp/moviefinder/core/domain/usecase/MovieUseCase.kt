@@ -13,4 +13,5 @@ interface MovieUseCase {
     fun getSessionInvalid(session: String): Flow<Boolean>
     fun saveTokenValidate(token: String)
     fun getTokenValidate(): Flow<String>
+    fun getRequestToken(): Flow<String>
 }

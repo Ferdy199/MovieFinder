@@ -120,11 +120,41 @@ class MovieRepository private constructor(
     }
 
     override fun saveTokenValidate(token: String) {
+        Log.d("MovieFinder Repository", "save Token validate")
         sharedPreferences.edit().putString(Constant.REQUEST_TOKEN_VALIDATE, token).apply()
     }
 
+    override fun getRequestTokenValidate(): Flow<String> {
+        return flow {
+            try {
+                val getValidateToken = sharedPreferences.getString(Constant.REQUEST_TOKEN_VALIDATE, "")
+                if (!getValidateToken.isNullOrEmpty()){
+                    emit(getValidateToken)
+                }else{
+                    Log.d("MovieFinder Repository", "failed getRequestTokenValidate")
+                }
+            }catch (e:Exception){
+                Log.d("MovieFinder Repository", "getRequestTokenValidate: ${e.message}")
+            }
+        }
+    }
+
+
     override fun saveRequestToken(token: String){
+        Log.d("MovieFinder Repository", "save request token")
         sharedPreferences.edit().putString(Constant.REQUEST_TOKEN, token).apply()
+    }
+
+    override fun getRequestToken(): Flow<String> {
+        return flow {
+            val requestToken = sharedPreferences.getString(Constant.REQUEST_TOKEN, "")
+            if (!requestToken.isNullOrEmpty()){
+                Log.d("MovieFinder Repository", "getRequestToken: sendToken $requestToken")
+                emit(requestToken)
+            }else{
+                Log.d("MovieFinder Repository", "failed getRequestToken")
+            }
+        }
     }
 
     override fun isSessionValid(session: String): Flow<Boolean>  {
@@ -145,16 +175,5 @@ class MovieRepository private constructor(
         }
     }
 
-    override fun getRequestTokenValidate(): Flow<String> {
-        return flow {
-            try {
-                val getValidateToken = sharedPreferences.getString(Constant.REQUEST_TOKEN_VALIDATE, "")
-                if (!getValidateToken.isNullOrEmpty()){
-                    emit(getValidateToken)
-                }
-            }catch (e:Exception){
-                Log.d("MovieFinder Repository", "getRequestTokenValidate: ${e.message}")
-            }
-        }
-    }
+
 }
