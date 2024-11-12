@@ -1,12 +1,14 @@
 package com.ferdsapp.moviefinder.ui.login
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import com.ferdsapp.moviefinder.core.data.utils.ApiResponse
 import com.ferdsapp.moviefinder.core.utils.Constant
 import com.ferdsapp.moviefinder.databinding.ActivityLoginBinding
@@ -19,6 +21,8 @@ class LoginActivity : AppCompatActivity() {
         ViewModelFactory.getInstance(this)
     }
 
+    private val webViewClients = WebViewClient()
+
     private var tokenLogin = ""
     private var tokenValidate = ""
     private var tokenExp = ""
@@ -29,6 +33,11 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        with(binding.loginWebView){
+            webViewClient = webViewClients
+            settings.javaScriptEnabled = true
+        }
+
         //observe token validate
         observeTokenValidate()
 
@@ -38,11 +47,6 @@ class LoginActivity : AppCompatActivity() {
         binding.loginButton.setOnClickListener {
             checkRequestToken()
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        handleRequestToken()
     }
 
     private fun observeTokenValidate(){
@@ -87,8 +91,10 @@ class LoginActivity : AppCompatActivity() {
     private fun checkRequestToken(){
         var sessionValid = false
         if (tokenValidate.isEmpty()){
-            val intent = Intent(Intent.ACTION_VIEW,Uri.parse("https://www.themoviedb.org/authenticate/$tokenLogin"))
-            startActivity(intent)
+            binding.loginWebView.visibility = WebView.VISIBLE
+            binding.loginCard.visibility = CardView.GONE
+            binding.loginWebView.loadUrl("https://www.themoviedb.org/authenticate/$tokenLogin")
+            handleBackPressed()
         }else{
             loginViewModel.getSessionInvalid(tokenValidate).observe(this) { key ->
                 sessionValid = key
@@ -106,8 +112,10 @@ class LoginActivity : AppCompatActivity() {
                 if (tokenLogin.isEmpty()){
                     Toast.makeText(this, "Token Kosong", Toast.LENGTH_SHORT).show()
                 }else{
-                    val intent = Intent(Intent.ACTION_VIEW,Uri.parse("https://www.themoviedb.org/authenticate/$tokenLogin"))
-                    startActivity(intent)
+                    binding.loginWebView.visibility = WebView.VISIBLE
+                    binding.loginCard.visibility = CardView.GONE
+                    binding.loginWebView.loadUrl("https://www.themoviedb.org/authenticate/$tokenLogin")
+                    handleBackPressed()
                 }
             }
         }
@@ -118,6 +126,14 @@ class LoginActivity : AppCompatActivity() {
         if (tokenValidate.isEmpty() && tokenExp.isNotEmpty()){
             loginViewModel.saveTokenValidate(tokenExp)
             tokenValidate = sharedPreferences.getString(Constant.REQUEST_TOKEN_VALIDATE, "").toString()
+        }
+    }
+
+    private fun handleBackPressed(){
+        onBackPressedDispatcher.addCallback(this){
+            binding.loginCard.visibility = CardView.VISIBLE
+            binding.loginWebView.visibility = WebView.GONE
+            handleRequestToken()
         }
     }
 }
