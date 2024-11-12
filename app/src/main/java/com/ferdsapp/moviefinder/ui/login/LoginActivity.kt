@@ -29,65 +29,91 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //observe token validate
+        observeTokenValidate()
+
+        //observe request token
+        observeRequestToken()
+
+        binding.loginButton.setOnClickListener {
+            checkRequestToken()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        handleRequestToken()
+    }
+
+    private fun observeTokenValidate(){
         loginViewModel.getTokenValidate.observe(this) { getTokenValidate ->
             when (getTokenValidate) {
                 is ApiResponse.Success -> {
                     tokenValidate = getTokenValidate.data
                 }
                 is ApiResponse.Empty -> {
-                    loginViewModel.getTokenLogin.observe(this) { apiResponse ->
-                        when (apiResponse) {
-                            is ApiResponse.Success -> {
-                                tokenExp = apiResponse.data.expires_at
-                                tokenLogin = apiResponse.data.request_token
-                            }
-                            is ApiResponse.Empty -> {
-                                Log.d("Login Activity", "response error: empty")
-                            }
-                            is ApiResponse.Error -> {
-                                Log.d("Login Activity", "response error: ${apiResponse.errorMessage}")
-                            }
-                        }
-                    }
+                    getTokenLogin()
                 }
                 is ApiResponse.Error -> {
                     Log.d("Login Activity", "response error: ${getTokenValidate.errorMessage}")
                 }
             }
         }
+    }
 
+    private fun observeRequestToken(){
         loginViewModel.getRequestToken.observe(this){ requestToken ->
             tokenLogin = requestToken
         }
+    }
 
-        binding.loginButton.setOnClickListener {
-            var sessionValid = false
-            if (tokenValidate.isEmpty()){
-                val intent = Intent(Intent.ACTION_VIEW,Uri.parse("https://www.themoviedb.org/authenticate/$tokenLogin"))
-                startActivity(intent)
-            }else{
-                 loginViewModel.getSessionInvalid(tokenValidate).observe(this) { key ->
-                     sessionValid = key
+    private fun getTokenLogin(){
+        loginViewModel.getTokenLogin.observe(this) { apiResponse ->
+            when (apiResponse) {
+                is ApiResponse.Success -> {
+                    tokenExp = apiResponse.data.expires_at
+                    tokenLogin = apiResponse.data.request_token
                 }
-                when(sessionValid){
-                    true -> {
-                        Toast.makeText(this, "Session Valid", Toast.LENGTH_SHORT).show()
-                    }
-                    else -> {
-                        if (tokenLogin.isEmpty()){
-                            Toast.makeText(this, "Token Kosong", Toast.LENGTH_SHORT).show()
-                        }else{
-                            val intent = Intent(Intent.ACTION_VIEW,Uri.parse("https://www.themoviedb.org/authenticate/$tokenLogin"))
-                            startActivity(intent)
-                        }
-                    }
+                is ApiResponse.Empty -> {
+                    Log.d("Login Activity", "response error: empty")
+                }
+                is ApiResponse.Error -> {
+                    Log.d("Login Activity", "response error: ${apiResponse.errorMessage}")
                 }
             }
         }
     }
 
-    override fun onResume() {
-        super.onResume()
+    private fun checkRequestToken(){
+        var sessionValid = false
+        if (tokenValidate.isEmpty()){
+            val intent = Intent(Intent.ACTION_VIEW,Uri.parse("https://www.themoviedb.org/authenticate/$tokenLogin"))
+            startActivity(intent)
+        }else{
+            loginViewModel.getSessionInvalid(tokenValidate).observe(this) { key ->
+                sessionValid = key
+            }
+            checkSessionValid(sessionValid)
+        }
+    }
+
+    private fun checkSessionValid(sessionValid: Boolean){
+        when(sessionValid){
+            true -> {
+                Toast.makeText(this, "Session Valid", Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                if (tokenLogin.isEmpty()){
+                    Toast.makeText(this, "Token Kosong", Toast.LENGTH_SHORT).show()
+                }else{
+                    val intent = Intent(Intent.ACTION_VIEW,Uri.parse("https://www.themoviedb.org/authenticate/$tokenLogin"))
+                    startActivity(intent)
+                }
+            }
+        }
+    }
+
+    private fun handleRequestToken(){
         val sharedPreferences = getSharedPreferences("MovieFinder", MODE_PRIVATE)
         if (tokenValidate.isEmpty() && tokenExp.isNotEmpty()){
             loginViewModel.saveTokenValidate(tokenExp)
