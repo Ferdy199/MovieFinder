@@ -11,7 +11,7 @@ interface IMoveRepository {
     fun getTvShowPlaying(): Flow<ApiResponse<ArrayList<ItemTvShowPlaying>>>
     fun getTokenLogin(): Flow<ApiResponse<GetTokenLogin>>
     fun isSessionValid(session: String): Flow<Boolean>
-    fun getRequestTokenValidate(): Flow<String>
+    fun getRequestTokenValidate(): Flow<ApiResponse<String>>
     fun saveTokenValidate(token: String)
     fun saveRequestToken(token: String)
     fun getRequestToken(): Flow<String>

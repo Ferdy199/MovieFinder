@@ -2,10 +2,7 @@ package com.ferdsapp.moviefinder.viewModel.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
 import com.ferdsapp.moviefinder.core.domain.usecase.MovieUseCase
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 class LoginViewModel(private val movieUseCase: MovieUseCase) : ViewModel() {
     val getTokenLogin = movieUseCase.getLoginToken().asLiveData()

@@ -124,17 +124,18 @@ class MovieRepository private constructor(
         sharedPreferences.edit().putString(Constant.REQUEST_TOKEN_VALIDATE, token).apply()
     }
 
-    override fun getRequestTokenValidate(): Flow<String> {
+    override fun getRequestTokenValidate(): Flow<ApiResponse<String>> {
         return flow {
             try {
                 val getValidateToken = sharedPreferences.getString(Constant.REQUEST_TOKEN_VALIDATE, "")
                 if (!getValidateToken.isNullOrEmpty()){
-                    emit(getValidateToken)
+                    emit(ApiResponse.Success(getValidateToken))
                 }else{
-                    Log.d("MovieFinder Repository", "failed getRequestTokenValidate")
+                    emit(ApiResponse.Empty)
                 }
             }catch (e:Exception){
                 Log.d("MovieFinder Repository", "getRequestTokenValidate: ${e.message}")
+                emit(ApiResponse.Error(e.message.toString()))
             }
         }
     }
