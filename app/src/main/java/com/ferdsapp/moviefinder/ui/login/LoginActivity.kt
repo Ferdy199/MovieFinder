@@ -103,7 +103,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkSessionValid(sessionValid: Boolean){
+    private fun  checkSessionValid(sessionValid: Boolean){
         when(sessionValid){
             true -> {
                 Toast.makeText(this, "Session Valid", Toast.LENGTH_SHORT).show()
@@ -125,7 +125,7 @@ class LoginActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences("MovieFinder", MODE_PRIVATE)
         if (tokenValidate.isEmpty() && tokenExp.isNotEmpty()){
             loginViewModel.saveTokenValidate(tokenExp)
-            tokenValidate = sharedPreferences.getString(Constant.REQUEST_TOKEN_VALIDATE, "").toString()
+            tokenValidate = sharedPreferences.getString(Constant.SESSION_REQUEST_TOKEN_VALIDATE, "").toString()
         }
     }
 

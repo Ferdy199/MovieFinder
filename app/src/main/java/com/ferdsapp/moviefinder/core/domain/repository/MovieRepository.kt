@@ -3,6 +3,7 @@ package com.ferdsapp.moviefinder.core.domain.repository
 import android.content.SharedPreferences
 import android.util.Log
 import com.ferdsapp.moviefinder.core.data.model.network.login.GetTokenLogin
+import com.ferdsapp.moviefinder.core.data.model.network.login.LoginResponse
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.movie.ItemMovePlaying
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.tvShow.ItemTvShowPlaying
 import com.ferdsapp.moviefinder.core.data.source.RemoteDataSource
@@ -121,13 +122,13 @@ class MovieRepository private constructor(
 
     override fun saveTokenValidate(token: String) {
         Log.d("MovieFinder Repository", "save Token validate")
-        sharedPreferences.edit().putString(Constant.REQUEST_TOKEN_VALIDATE, token).apply()
+        sharedPreferences.edit().putString(Constant.SESSION_REQUEST_TOKEN_VALIDATE, token).apply()
     }
 
     override fun getRequestTokenValidate(): Flow<ApiResponse<String>> {
         return flow {
             try {
-                val getValidateToken = sharedPreferences.getString(Constant.REQUEST_TOKEN_VALIDATE, "")
+                val getValidateToken = sharedPreferences.getString(Constant.SESSION_REQUEST_TOKEN_VALIDATE, "")
                 if (!getValidateToken.isNullOrEmpty()){
                     emit(ApiResponse.Success(getValidateToken))
                 }else{
@@ -176,5 +177,32 @@ class MovieRepository private constructor(
         }
     }
 
-
+    override fun loginProcess(username: String, password: String): Flow<ApiResponse<LoginResponse>> {
+        return flow {
+            try {
+                val requestToken = sharedPreferences.getString(Constant.REQUEST_TOKEN, "")
+                if (!requestToken.isNullOrEmpty()){
+                    remoteDataSource
+                        .loginProcess(requestToken, username, password)
+                        .collect { apiResponse ->
+                            when(apiResponse){
+                                is ApiResponse.Success -> {
+                                    emit(ApiResponse.Success(apiResponse.data))
+                                }
+                                is ApiResponse.Empty -> {
+                                    emit(ApiResponse.Empty)
+                                }
+                                is ApiResponse.Error -> {
+                                    emit(ApiResponse.Error(apiResponse.errorMessage))
+                                }
+                            }
+                        }
+                }else{
+                    emit(ApiResponse.Empty)
+                }
+            }catch (e: Exception){
+                emit(ApiResponse.Error(e.message.toString()))
+            }
+        }
+    }
 }

@@ -1,5 +1,7 @@
 package com.ferdsapp.moviefinder.core.domain.usecase
 
+import com.ferdsapp.moviefinder.core.data.model.network.login.LoginResponse
+import com.ferdsapp.moviefinder.core.data.utils.ApiResponse
 import com.ferdsapp.moviefinder.core.domain.repository.IMoveRepository
 import kotlinx.coroutines.flow.Flow
 
@@ -11,4 +13,5 @@ class MovieInteractor(private val movieRepository: IMoveRepository) : MovieUseCa
     override fun saveTokenValidate(token: String) = movieRepository.saveTokenValidate(token)
     override fun getTokenValidate() = movieRepository.getRequestTokenValidate()
     override fun getRequestToken() = movieRepository.getRequestToken()
+    override fun loginProcess(username: String, password: String): Flow<ApiResponse<LoginResponse>> = movieRepository.loginProcess(username, password)
 }

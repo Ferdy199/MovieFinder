@@ -10,4 +10,5 @@ class LoginViewModel(private val movieUseCase: MovieUseCase) : ViewModel() {
     val getRequestToken = movieUseCase.getRequestToken().asLiveData()
     fun getSessionInvalid(key: String) = movieUseCase.getSessionInvalid(key).asLiveData()
     fun saveTokenValidate(token: String) = movieUseCase.saveTokenValidate(token)
+    fun loginProcess(username: String, password: String) = movieUseCase.loginProcess(username, password).asLiveData()
 }
