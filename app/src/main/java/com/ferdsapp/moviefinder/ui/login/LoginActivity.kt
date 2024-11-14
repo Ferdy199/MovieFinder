@@ -2,18 +2,29 @@ package com.ferdsapp.moviefinder.ui.login
 
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
+import com.ferdsapp.moviefinder.R
 import com.ferdsapp.moviefinder.core.data.utils.ApiResponse
 import com.ferdsapp.moviefinder.core.utils.Constant
 import com.ferdsapp.moviefinder.databinding.ActivityLoginBinding
 import com.ferdsapp.moviefinder.viewModel.login.LoginViewModel
 import com.ferdsapp.moviefinder.viewModel.utils.ViewModelFactory
+import com.google.android.material.snackbar.Snackbar
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
@@ -60,6 +71,7 @@ class LoginActivity : AppCompatActivity() {
                 }
                 is ApiResponse.Error -> {
                     Log.d("Login Activity", "response error: ${getTokenValidate.errorMessage}")
+                    showCustomSnackbar(binding.root, getTokenValidate.errorMessage)
                 }
             }
         }
@@ -83,6 +95,7 @@ class LoginActivity : AppCompatActivity() {
                 }
                 is ApiResponse.Error -> {
                     Log.d("Login Activity", "response error: ${apiResponse.errorMessage}")
+                    showCustomSnackbar(binding.root, apiResponse.errorMessage)
                 }
             }
         }
@@ -135,5 +148,25 @@ class LoginActivity : AppCompatActivity() {
             binding.loginWebView.visibility = WebView.GONE
             handleRequestToken()
         }
+    }
+
+    private fun showCustomSnackbar(view: View, message: String){
+        val snackbar = Snackbar.make(view, message, Snackbar.LENGTH_SHORT)
+
+        val customview by lazy {
+            LayoutInflater.from(view.context).inflate(R.layout.custom_snackbar, null).apply {
+                findViewById<TextView>(R.id.snackbar_text).text = message
+                Glide.with(view.context)
+                    .load(R.drawable.logo)
+                    .apply(RequestOptions.bitmapTransform(RoundedCorners(4)))
+                    .into(this.findViewById(R.id.snackbar_icon))
+            }
+        }
+
+        snackbar.setBackgroundTint(ContextCompat.getColor(this, R.color.white))
+        snackbar.setText("") // Hilangkan teks default
+        snackbar.view.setPadding(0, 0, 0, 0) // Hilangkan padding default Snackbar
+        (snackbar.view as ViewGroup).addView(customview) // Tambahkan custom view
+        snackbar.show()
     }
 }

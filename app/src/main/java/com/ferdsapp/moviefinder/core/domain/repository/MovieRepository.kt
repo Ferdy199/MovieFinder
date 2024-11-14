@@ -2,13 +2,14 @@ package com.ferdsapp.moviefinder.core.domain.repository
 
 import android.content.SharedPreferences
 import android.util.Log
+import com.ferdsapp.moviefinder.core.data.model.entity.movie.MovieEntity
+import com.ferdsapp.moviefinder.core.data.model.entity.tvShow.TvShowEntity
 import com.ferdsapp.moviefinder.core.data.model.network.login.GetTokenLogin
 import com.ferdsapp.moviefinder.core.data.model.network.login.LoginResponse
-import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.movie.ItemMovePlaying
-import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.tvShow.ItemTvShowPlaying
 import com.ferdsapp.moviefinder.core.data.source.RemoteDataSource
 import com.ferdsapp.moviefinder.core.data.utils.ApiResponse
 import com.ferdsapp.moviefinder.core.utils.Constant
+import com.ferdsapp.moviefinder.core.utils.DataMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -38,7 +39,7 @@ class MovieRepository private constructor(
     }
 
     //function here
-    override fun getMoviePlaying(): Flow<ApiResponse<ArrayList<ItemMovePlaying>>> {
+    override fun getMoviePlaying(): Flow<ApiResponse<ArrayList<MovieEntity>>> {
         return flow {
             try {
                 remoteDataSource
@@ -47,7 +48,8 @@ class MovieRepository private constructor(
                         when(apiResponse){
                             is ApiResponse.Success -> {
                                 Log.d("MovieFinder Repository", "response Success")
-                                emit(ApiResponse.Success(apiResponse.data))
+                                val movieList = DataMapper.mapResponsestMovieEntities(apiResponse.data)
+                                emit(ApiResponse.Success(movieList))
                             }
                             is ApiResponse.Empty -> {
                                 Log.d("MovieFinder Repository", "response Empty")
@@ -65,7 +67,7 @@ class MovieRepository private constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun getTvShowPlaying(): Flow<ApiResponse<ArrayList<ItemTvShowPlaying>>> {
+    override fun getTvShowPlaying(): Flow<ApiResponse<ArrayList<TvShowEntity>>> {
         return flow {
             try {
                 remoteDataSource
@@ -74,7 +76,8 @@ class MovieRepository private constructor(
                         when(apiResponse){
                             is ApiResponse.Success -> {
                                 Log.d("MovieFinder Repository", "response tvShow Success")
-                                emit(ApiResponse.Success(apiResponse.data))
+                                val tvShowList = DataMapper.mapResponsesTvShowEntities(apiResponse.data)
+                                emit(ApiResponse.Success(tvShowList))
                             }
                             is ApiResponse.Empty -> {
                                 Log.d("MovieFinder Repository", "response tvShow Empty")
