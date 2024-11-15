@@ -1,5 +1,6 @@
 package com.ferdsapp.moviefinder.ui.login
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
@@ -19,9 +19,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.ferdsapp.moviefinder.R
-import com.ferdsapp.moviefinder.core.data.utils.ApiResponse
+import com.ferdsapp.moviefinder.core.data.utils.Resource
 import com.ferdsapp.moviefinder.core.utils.Constant
 import com.ferdsapp.moviefinder.databinding.ActivityLoginBinding
+import com.ferdsapp.moviefinder.ui.main.MainActivity
 import com.ferdsapp.moviefinder.viewModel.login.LoginViewModel
 import com.ferdsapp.moviefinder.viewModel.utils.ViewModelFactory
 import com.google.android.material.snackbar.Snackbar
@@ -56,22 +57,27 @@ class LoginActivity : AppCompatActivity() {
         observeRequestToken()
 
         binding.loginButton.setOnClickListener {
-            checkRequestToken()
+            val username = binding.username.text.toString()
+            val password = binding.password.text.toString()
+            checkRequestToken(username, password)
         }
     }
 
     private fun observeTokenValidate(){
         loginViewModel.getTokenValidate.observe(this) { getTokenValidate ->
             when (getTokenValidate) {
-                is ApiResponse.Success -> {
-                    tokenValidate = getTokenValidate.data
+                is Resource.Success<*> -> {
+                    tokenValidate = getTokenValidate.data.toString()
                 }
-                is ApiResponse.Empty -> {
+                is Resource.Empty<*> -> {
                     getTokenLogin()
                 }
-                is ApiResponse.Error -> {
-                    Log.d("Login Activity", "response error: ${getTokenValidate.errorMessage}")
-                    showCustomSnackbar(binding.root, getTokenValidate.errorMessage)
+                is Resource.Error<*> -> {
+                    Log.d("Login Activity", "response error: ${getTokenValidate.message}")
+                    showCustomSnackbar(binding.root, getTokenValidate.message.toString())
+                }
+                else -> {
+                    Log.d("Login Activity", "unknown Error")
                 }
             }
         }
@@ -86,22 +92,25 @@ class LoginActivity : AppCompatActivity() {
     private fun getTokenLogin(){
         loginViewModel.getTokenLogin.observe(this) { apiResponse ->
             when (apiResponse) {
-                is ApiResponse.Success -> {
-                    tokenExp = apiResponse.data.expires_at
-                    tokenLogin = apiResponse.data.request_token
+                is Resource.Success<*> -> {
+//                    tokenExp = apiResponse.data.expires_at
+//                    tokenLogin = apiResponse.data.request_token
                 }
-                is ApiResponse.Empty -> {
+                is Resource.Empty<*> -> {
                     Log.d("Login Activity", "response error: empty")
                 }
-                is ApiResponse.Error -> {
-                    Log.d("Login Activity", "response error: ${apiResponse.errorMessage}")
-                    showCustomSnackbar(binding.root, apiResponse.errorMessage)
+                is Resource.Error<*> -> {
+                    Log.d("Login Activity", "response error: ${apiResponse.message}")
+                    showCustomSnackbar(binding.root, apiResponse.message)
+                }
+                else -> {
+                    Log.d("Login Activity", "unknown Error")
                 }
             }
         }
     }
 
-    private fun checkRequestToken(){
+    private fun checkRequestToken(username: String, password: String){
         var sessionValid = false
         if (tokenValidate.isEmpty()){
             binding.loginWebView.visibility = WebView.VISIBLE
@@ -112,14 +121,31 @@ class LoginActivity : AppCompatActivity() {
             loginViewModel.getSessionInvalid(tokenValidate).observe(this) { key ->
                 sessionValid = key
             }
-            checkSessionValid(sessionValid)
+            checkSessionValid(sessionValid, username, password)
         }
     }
 
-    private fun  checkSessionValid(sessionValid: Boolean){
+    private fun  checkSessionValid(sessionValid: Boolean, username: String, password: String){
         when(sessionValid){
             true -> {
                 Toast.makeText(this, "Session Valid", Toast.LENGTH_SHORT).show()
+                loginViewModel.loginProcess(username = username, password = password).observe(this){ apiResponse ->
+                    when(apiResponse){
+                        is Resource.Empty<*> -> {
+                            Log.d("Login Activity", "response Empty")
+                        }
+                        is Resource.Error<*> -> {
+                            Log.d("Login Activity", "response error: ${apiResponse.message}")
+                        }
+                        is Resource.Success<*> -> {
+                            val intent = Intent(this, MainActivity::class.java)
+                            startActivity(intent)
+                        }
+                        else -> {
+                            Log.d("Login Activity", "unknown Error")
+                        }
+                    }
+                }
             }
             else -> {
                 if (tokenLogin.isEmpty()){

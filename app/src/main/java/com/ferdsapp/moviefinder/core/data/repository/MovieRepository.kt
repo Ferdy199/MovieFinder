@@ -1,4 +1,4 @@
-package com.ferdsapp.moviefinder.core.domain.repository
+package com.ferdsapp.moviefinder.core.data.repository
 
 import android.content.SharedPreferences
 import android.util.Log
@@ -8,6 +8,8 @@ import com.ferdsapp.moviefinder.core.data.model.network.login.GetTokenLogin
 import com.ferdsapp.moviefinder.core.data.model.network.login.LoginResponse
 import com.ferdsapp.moviefinder.core.data.source.RemoteDataSource
 import com.ferdsapp.moviefinder.core.data.utils.ApiResponse
+import com.ferdsapp.moviefinder.core.data.utils.Resource
+import com.ferdsapp.moviefinder.core.domain.repository.IMoveRepository
 import com.ferdsapp.moviefinder.core.utils.Constant
 import com.ferdsapp.moviefinder.core.utils.DataMapper
 import kotlinx.coroutines.Dispatchers
@@ -39,64 +41,55 @@ class MovieRepository private constructor(
     }
 
     //function here
-    override fun getMoviePlaying(): Flow<ApiResponse<ArrayList<MovieEntity>>> {
-        return flow {
+    override fun getMoviePlaying(): Flow<Resource<ArrayList<MovieEntity>>> {
+        return flow<Resource<ArrayList<MovieEntity>>> {
             try {
-                remoteDataSource
-                    .getMovieNowPlaying()
-                    .collect { apiResponse ->
-                        when(apiResponse){
-                            is ApiResponse.Success -> {
-                                Log.d("MovieFinder Repository", "response Success")
-                                val movieList = DataMapper.mapResponsestMovieEntities(apiResponse.data)
-                                emit(ApiResponse.Success(movieList))
-                            }
-                            is ApiResponse.Empty -> {
-                                Log.d("MovieFinder Repository", "response Empty")
-                                emit(ApiResponse.Empty)
-                            }
-                            is ApiResponse.Error -> {
-                                Log.d("MovieFinder Repository", "response Error")
-                                emit(ApiResponse.Error(apiResponse.errorMessage))
-                            }
+                remoteDataSource.getMovieNowPlaying().collect{ apiResponse ->
+                    when(apiResponse){
+                        is ApiResponse.Success -> {
+                            val movieList = DataMapper.mapResponsestMovieEntities(apiResponse.data)
+                            emit(Resource.Success(movieList))
+                        }
+                        is ApiResponse.Empty -> {
+                            emit(Resource.Empty(data = null))
+                        }
+                        is ApiResponse.Error -> {
+                            emit(Resource.Error(apiResponse.errorMessage))
                         }
                     }
-            }catch (e : Exception){
-                emit(ApiResponse.Error(e.toString()))
-            }
-        }.flowOn(Dispatchers.IO)
-    }
-
-    override fun getTvShowPlaying(): Flow<ApiResponse<ArrayList<TvShowEntity>>> {
-        return flow {
-            try {
-                remoteDataSource
-                    .getTvShowNowPlaying()
-                    .collect { apiResponse ->
-                        when(apiResponse){
-                            is ApiResponse.Success -> {
-                                Log.d("MovieFinder Repository", "response tvShow Success")
-                                val tvShowList = DataMapper.mapResponsesTvShowEntities(apiResponse.data)
-                                emit(ApiResponse.Success(tvShowList))
-                            }
-                            is ApiResponse.Empty -> {
-                                Log.d("MovieFinder Repository", "response tvShow Empty")
-                                emit(ApiResponse.Empty)
-                            }
-                            is ApiResponse.Error -> {
-                                Log.d("MovieFinder Repository", "response tvShow Error")
-                                emit(ApiResponse.Error(apiResponse.errorMessage))
-                            }
-                        }
-                    }
+                }
             }catch (e: Exception){
-                emit(ApiResponse.Error(e.message.toString()))
+                emit(Resource.Error(e.message.toString()))
             }
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun getTokenLogin(): Flow<ApiResponse<GetTokenLogin>> {
-        return flow {
+    override fun getTvShowPlaying(): Flow<Resource<ArrayList<TvShowEntity>>> {
+
+        return flow<Resource<ArrayList<TvShowEntity>>> {
+            try {
+                remoteDataSource.getTvShowNowPlaying().collect{ apiResponse ->
+                    when(apiResponse){
+                        is ApiResponse.Success -> {
+                            val tvShowList = DataMapper.mapResponsesTvShowEntities(apiResponse.data)
+                            emit(Resource.Success(tvShowList))
+                        }
+                        is ApiResponse.Empty -> {
+                            emit(Resource.Empty(data = null))
+                        }
+                        is ApiResponse.Error -> {
+                            emit(Resource.Error(apiResponse.errorMessage))
+                        }
+                    }
+                }
+            }catch (e: Exception){
+                emit(Resource.Error(e.message.toString()))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun getTokenLogin(): Flow<Resource<GetTokenLogin>> {
+        return flow<Resource<GetTokenLogin>> {
             try {
                 remoteDataSource.getLoginToken().collect { apiResponse ->
                     when(apiResponse){
@@ -104,23 +97,23 @@ class MovieRepository private constructor(
                             if (apiResponse.data.success){
                                 val dataToken = apiResponse.data
                                 saveRequestToken(dataToken.request_token)
-                                emit(ApiResponse.Success(dataToken))
+                                emit(Resource.Success(dataToken))
                             }else{
-                                emit(ApiResponse.Error(apiResponse.data.toString()))
+                                emit(Resource.Error(apiResponse.data.toString()))
                             }
                         }
                         is ApiResponse.Empty -> {
-                            emit(ApiResponse.Empty)
+                            emit(Resource.Empty(data = null))
                         }
                         is ApiResponse.Error -> {
-                            emit(ApiResponse.Error(apiResponse.errorMessage))
+                            emit(Resource.Error(apiResponse.errorMessage))
                         }
                     }
                 }
             }catch (e: Exception){
-                emit(ApiResponse.Error(e.message.toString()))
+                emit(Resource.Error(e.message.toString()))
             }
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
     override fun saveTokenValidate(token: String) {
@@ -128,20 +121,20 @@ class MovieRepository private constructor(
         sharedPreferences.edit().putString(Constant.SESSION_REQUEST_TOKEN_VALIDATE, token).apply()
     }
 
-    override fun getRequestTokenValidate(): Flow<ApiResponse<String>> {
-        return flow {
+    override fun getRequestTokenValidate(): Flow<Resource<String>> {
+        return flow<Resource<String>> {
             try {
                 val getValidateToken = sharedPreferences.getString(Constant.SESSION_REQUEST_TOKEN_VALIDATE, "")
                 if (!getValidateToken.isNullOrEmpty()){
-                    emit(ApiResponse.Success(getValidateToken))
+                    emit(Resource.Success(getValidateToken))
                 }else{
-                    emit(ApiResponse.Empty)
+                    emit(Resource.Empty(data = null))
                 }
             }catch (e:Exception){
                 Log.d("MovieFinder Repository", "getRequestTokenValidate: ${e.message}")
-                emit(ApiResponse.Error(e.message.toString()))
+                emit(Resource.Error(e.message.toString()))
             }
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
 
@@ -159,7 +152,7 @@ class MovieRepository private constructor(
             }else{
                 Log.d("MovieFinder Repository", "failed getRequestToken")
             }
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
     override fun isSessionValid(session: String): Flow<Boolean>  {
@@ -177,11 +170,11 @@ class MovieRepository private constructor(
 
             // Membandingkan apakah waktu saat ini sebelum waktu target
             emit(currentDate.before(targetDate))
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
-    override fun loginProcess(username: String, password: String): Flow<ApiResponse<LoginResponse>> {
-        return flow {
+    override fun loginProcess(username: String, password: String): Flow<Resource<LoginResponse>> {
+        return flow<Resource<LoginResponse>> {
             try {
                 val requestToken = sharedPreferences.getString(Constant.REQUEST_TOKEN, "")
                 if (!requestToken.isNullOrEmpty()){
@@ -190,22 +183,22 @@ class MovieRepository private constructor(
                         .collect { apiResponse ->
                             when(apiResponse){
                                 is ApiResponse.Success -> {
-                                    emit(ApiResponse.Success(apiResponse.data))
+                                    emit(Resource.Success(apiResponse.data))
                                 }
                                 is ApiResponse.Empty -> {
-                                    emit(ApiResponse.Empty)
+                                    emit(Resource.Empty(data = null))
                                 }
                                 is ApiResponse.Error -> {
-                                    emit(ApiResponse.Error(apiResponse.errorMessage))
+                                    emit(Resource.Error(apiResponse.errorMessage))
                                 }
                             }
                         }
                 }else{
-                    emit(ApiResponse.Empty)
+                    emit(Resource.Empty(data = null))
                 }
             }catch (e: Exception){
-                emit(ApiResponse.Error(e.message.toString()))
+                emit(Resource.Error(e.message.toString()))
             }
-        }
+        }.flowOn(Dispatchers.IO)
     }
 }

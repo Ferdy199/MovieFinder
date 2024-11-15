@@ -3,7 +3,7 @@ package com.ferdsapp.moviefinder.core.di
 import android.content.Context
 import com.ferdsapp.moviefinder.core.data.source.RemoteDataSource
 import com.ferdsapp.moviefinder.core.data.source.network.ApiConfig
-import com.ferdsapp.moviefinder.core.domain.repository.MovieRepository
+import com.ferdsapp.moviefinder.core.data.repository.MovieRepository
 import com.ferdsapp.moviefinder.core.domain.usecase.MovieInteractor
 import com.ferdsapp.moviefinder.core.domain.usecase.MovieUseCase
 

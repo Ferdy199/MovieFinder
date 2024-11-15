@@ -5,10 +5,9 @@ import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.ferdsapp.moviefinder.core.data.utils.ApiResponse
+import com.ferdsapp.moviefinder.core.data.utils.Resource
 import com.ferdsapp.moviefinder.databinding.ActivityMainBinding
 import com.ferdsapp.moviefinder.ui.adapter.MovieAdapter
 import com.ferdsapp.moviefinder.viewModel.main.MainViewModel
@@ -45,20 +44,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun <T> observeApiResponse(
-        liveData: LiveData<ApiResponse<ArrayList<T>>>,
+        liveData: LiveData<Resource<ArrayList<T>>>,
         onSuccess: (List<T>) -> Unit
     ){
         liveData.observe(this){ apiResponse ->
             when(apiResponse){
-                is ApiResponse.Success -> {
+                is Resource.Success -> {
                     Log.d("MainActivity", "response Success")
                     onSuccess(apiResponse.data)
                 }
-                is ApiResponse.Empty -> {
+                is Resource.Empty -> {
                     Log.d("MainActivity", "response Empty")
                 }
-                is ApiResponse.Error -> {
-                    Log.d("MainActivity", "response Error: ${apiResponse.errorMessage}")
+                is Resource.Error -> {
+                    Log.d("MainActivity", "response Error: ${apiResponse.message}")
                 }
             }
         }
