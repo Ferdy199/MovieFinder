@@ -51,7 +51,7 @@ class MovieRepository private constructor(
                             emit(Resource.Success(movieList))
                         }
                         is ApiResponse.Empty -> {
-                            emit(Resource.Empty(data = null))
+                            emit(Resource.Empty)
                         }
                         is ApiResponse.Error -> {
                             emit(Resource.Error(apiResponse.errorMessage))
@@ -75,7 +75,7 @@ class MovieRepository private constructor(
                             emit(Resource.Success(tvShowList))
                         }
                         is ApiResponse.Empty -> {
-                            emit(Resource.Empty(data = null))
+                            emit(Resource.Empty)
                         }
                         is ApiResponse.Error -> {
                             emit(Resource.Error(apiResponse.errorMessage))
@@ -103,7 +103,7 @@ class MovieRepository private constructor(
                             }
                         }
                         is ApiResponse.Empty -> {
-                            emit(Resource.Empty(data = null))
+                            emit(Resource.Empty)
                         }
                         is ApiResponse.Error -> {
                             emit(Resource.Error(apiResponse.errorMessage))
@@ -122,13 +122,13 @@ class MovieRepository private constructor(
     }
 
     override fun getRequestTokenValidate(): Flow<Resource<String>> {
-        return flow<Resource<String>> {
+        return flow {
             try {
                 val getValidateToken = sharedPreferences.getString(Constant.SESSION_REQUEST_TOKEN_VALIDATE, "")
                 if (!getValidateToken.isNullOrEmpty()){
                     emit(Resource.Success(getValidateToken))
                 }else{
-                    emit(Resource.Empty(data = null))
+                    emit(Resource.Empty)
                 }
             }catch (e:Exception){
                 Log.d("MovieFinder Repository", "getRequestTokenValidate: ${e.message}")
@@ -158,16 +158,17 @@ class MovieRepository private constructor(
     override fun isSessionValid(session: String): Flow<Boolean>  {
         return flow {
             // Tanggal target sesi dalam format UTC
-            val targetDateString = session
+
             val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
             dateFormat.timeZone = TimeZone.getTimeZone("UTC")
 
             // Parsing tanggal target
-            val targetDate = dateFormat.parse(targetDateString)
+            val targetDate = dateFormat.parse(session)
 
             // Mendapatkan waktu saat ini
             val currentDate = Date()
 
+            Log.d("MovieFinder Repository", "isSessionValid date: $currentDate || $targetDate || ${currentDate.before(targetDate)}")
             // Membandingkan apakah waktu saat ini sebelum waktu target
             emit(currentDate.before(targetDate))
         }.flowOn(Dispatchers.IO)
@@ -177,6 +178,7 @@ class MovieRepository private constructor(
         return flow<Resource<LoginResponse>> {
             try {
                 val requestToken = sharedPreferences.getString(Constant.REQUEST_TOKEN, "")
+                Log.d("MovieFinder Repository", "loginProcess token: $requestToken")
                 if (!requestToken.isNullOrEmpty()){
                     remoteDataSource
                         .loginProcess(requestToken, username, password)
@@ -186,7 +188,7 @@ class MovieRepository private constructor(
                                     emit(Resource.Success(apiResponse.data))
                                 }
                                 is ApiResponse.Empty -> {
-                                    emit(Resource.Empty(data = null))
+                                    emit(Resource.Empty)
                                 }
                                 is ApiResponse.Error -> {
                                     emit(Resource.Error(apiResponse.errorMessage))
@@ -194,7 +196,7 @@ class MovieRepository private constructor(
                             }
                         }
                 }else{
-                    emit(Resource.Empty(data = null))
+                    emit(Resource.Empty)
                 }
             }catch (e: Exception){
                 emit(Resource.Error(e.message.toString()))

@@ -3,7 +3,7 @@ package com.ferdsapp.moviefinder.core.data.model.entity.movie
 data class MovieEntity(
     var adult: Boolean = false,
 
-    var backdrop_path: String,
+    var backdrop_path: String? = "",
 
     var genre_ids: ArrayList<Int>,
 
@@ -17,7 +17,7 @@ data class MovieEntity(
 
     var popularity: Float,
 
-    var poster_path: String,
+    var poster_path: String? = "",
 
     var release_date: String,
 

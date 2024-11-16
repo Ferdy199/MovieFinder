@@ -2,13 +2,9 @@ package com.ferdsapp.moviefinder.ui.splash
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.ferdsapp.moviefinder.R
 import com.ferdsapp.moviefinder.ui.login.LoginActivity
-import com.ferdsapp.moviefinder.ui.main.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

@@ -4,6 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.ferdsapp.moviefinder.core.data.model.entity.movie.MovieEntity
+import com.ferdsapp.moviefinder.core.data.model.entity.tvShow.TvShowEntity
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.movie.ItemMovePlaying
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.tvShow.ItemTvShowPlaying
 import com.ferdsapp.moviefinder.databinding.ItemsListHorizontalBinding
@@ -20,8 +22,8 @@ class MovieAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemViewType(position: Int): Int {
         return when (listItem[position]) {
-            is ItemMovePlaying -> ITEM_MOVIE
-            is ItemTvShowPlaying -> ITEM_TV_SHOW
+            is MovieEntity -> ITEM_MOVIE
+            is TvShowEntity -> ITEM_TV_SHOW
             else -> throw IllegalArgumentException("Unknown item type")
         }
     }
@@ -43,8 +45,8 @@ class MovieAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder){
-            is MovieViewHolder -> holder.bind(listItem[position] as ItemMovePlaying)
-            is TvShowViewHolder -> holder.bind(listItem[position] as ItemTvShowPlaying)
+            is MovieViewHolder -> holder.bind(listItem[position] as MovieEntity)
+            is TvShowViewHolder -> holder.bind(listItem[position] as TvShowEntity)
         }
     }
 
@@ -54,7 +56,7 @@ class MovieAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
     inner class MovieViewHolder(private val binding: ItemsListHorizontalBinding): RecyclerView.ViewHolder(binding.root) {
-        fun bind(movie: ItemMovePlaying){
+        fun bind(movie: MovieEntity){
             with(binding){
                 tvTitle.text = movie.original_title
                 Glide.with(itemView.context)
@@ -66,7 +68,7 @@ class MovieAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class TvShowViewHolder(private val binding: ItemsListHorizontalBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(tvShow: ItemTvShowPlaying) {
+        fun bind(tvShow: TvShowEntity) {
             with(binding) {
                 tvTitle.text = tvShow.original_name
                 Glide.with(itemView.context)

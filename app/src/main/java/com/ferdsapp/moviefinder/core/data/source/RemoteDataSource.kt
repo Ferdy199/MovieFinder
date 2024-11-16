@@ -106,7 +106,7 @@ class RemoteDataSource private constructor(private val apiService: ApiService) {
             try {
                 val token = BuildConfig.API_TOKEN
                 val response = apiService.loginProcess(
-                    authToken = token,
+                    authToken = "Bearer $token",
                     requestToken = requestToken,
                     username = username,
                     password = password

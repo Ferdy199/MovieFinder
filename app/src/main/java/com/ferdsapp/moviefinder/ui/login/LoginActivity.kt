@@ -38,6 +38,7 @@ class LoginActivity : AppCompatActivity() {
     private var tokenLogin = ""
     private var tokenValidate = ""
     private var tokenExp = ""
+    private var sessionValid: Boolean? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,15 +67,17 @@ class LoginActivity : AppCompatActivity() {
     private fun observeTokenValidate(){
         loginViewModel.getTokenValidate.observe(this) { getTokenValidate ->
             when (getTokenValidate) {
-                is Resource.Success<*> -> {
-                    tokenValidate = getTokenValidate.data.toString()
+                is Resource.Success -> {
+                    Log.d("Login Activity", "response Success: ${getTokenValidate.data}")
+                    tokenValidate = getTokenValidate.data
                 }
-                is Resource.Empty<*> -> {
+                is Resource.Empty -> {
+                    Log.d("Login Activity", "response Empty")
                     getTokenLogin()
                 }
-                is Resource.Error<*> -> {
+                is Resource.Error -> {
                     Log.d("Login Activity", "response error: ${getTokenValidate.message}")
-                    showCustomSnackbar(binding.root, getTokenValidate.message.toString())
+                    showCustomSnackbar(binding.root, getTokenValidate.message)
                 }
                 else -> {
                     Log.d("Login Activity", "unknown Error")
@@ -92,14 +95,14 @@ class LoginActivity : AppCompatActivity() {
     private fun getTokenLogin(){
         loginViewModel.getTokenLogin.observe(this) { apiResponse ->
             when (apiResponse) {
-                is Resource.Success<*> -> {
-//                    tokenExp = apiResponse.data.expires_at
-//                    tokenLogin = apiResponse.data.request_token
+                is Resource.Success -> {
+                    tokenExp = apiResponse.data.expires_at
+                    tokenLogin = apiResponse.data.request_token
                 }
-                is Resource.Empty<*> -> {
+                is Resource.Empty -> {
                     Log.d("Login Activity", "response error: empty")
                 }
-                is Resource.Error<*> -> {
+                is Resource.Error -> {
                     Log.d("Login Activity", "response error: ${apiResponse.message}")
                     showCustomSnackbar(binding.root, apiResponse.message)
                 }
@@ -111,37 +114,44 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun checkRequestToken(username: String, password: String){
-        var sessionValid = false
+        Log.d("Login Activity", "tokenValidate on checkRequest Token: $tokenValidate")
         if (tokenValidate.isEmpty()){
+            Log.d("Login Activity", "checkRequestToken: first condition")
             binding.loginWebView.visibility = WebView.VISIBLE
             binding.loginCard.visibility = CardView.GONE
             binding.loginWebView.loadUrl("https://www.themoviedb.org/authenticate/$tokenLogin")
             handleBackPressed()
         }else{
+            Log.d("Login Activity", "checkRequestToken: second condition token: $tokenValidate")
             loginViewModel.getSessionInvalid(tokenValidate).observe(this) { key ->
+                Log.d("Login Activity", "getSessionInvalid: $key")
                 sessionValid = key
+
+                Log.d("Login Activity", "checkRequestToken: sessionValid $sessionValid")
+                checkSessionValid(sessionValid!!, username, password)
             }
-            checkSessionValid(sessionValid, username, password)
         }
     }
 
     private fun  checkSessionValid(sessionValid: Boolean, username: String, password: String){
         when(sessionValid){
             true -> {
-                Toast.makeText(this, "Session Valid", Toast.LENGTH_SHORT).show()
                 loginViewModel.loginProcess(username = username, password = password).observe(this){ apiResponse ->
                     when(apiResponse){
-                        is Resource.Empty<*> -> {
+                        is Resource.Empty -> {
                             Log.d("Login Activity", "response Empty")
+                            showCustomSnackbar(binding.root, "response Empty")
                         }
-                        is Resource.Error<*> -> {
+                        is Resource.Error -> {
                             Log.d("Login Activity", "response error: ${apiResponse.message}")
+                            showCustomSnackbar(binding.root, apiResponse.message)
                         }
-                        is Resource.Success<*> -> {
+                        is Resource.Success -> {
                             val intent = Intent(this, MainActivity::class.java)
                             startActivity(intent)
                         }
                         else -> {
+                            showCustomSnackbar(binding.root, "unknown Error")
                             Log.d("Login Activity", "unknown Error")
                         }
                     }
@@ -151,6 +161,7 @@ class LoginActivity : AppCompatActivity() {
                 if (tokenLogin.isEmpty()){
                     Toast.makeText(this, "Token Kosong", Toast.LENGTH_SHORT).show()
                 }else{
+                    Log.d("Login Activity", "checkRequestToken: tokenLogin $tokenLogin")
                     binding.loginWebView.visibility = WebView.VISIBLE
                     binding.loginCard.visibility = CardView.GONE
                     binding.loginWebView.loadUrl("https://www.themoviedb.org/authenticate/$tokenLogin")

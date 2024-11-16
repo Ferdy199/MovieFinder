@@ -1,12 +1,10 @@
 package com.ferdsapp.moviefinder.core.data.model.entity.tvShow
 
-import com.google.gson.annotations.SerializedName
-
 data class TvShowEntity(
 
     val adult: Boolean = false,
 
-    val backdrop_path: String,
+    val backdrop_path: String? = "",
 
     val genre_ids: ArrayList<Int>,
 
@@ -22,7 +20,7 @@ data class TvShowEntity(
 
     val popularity: Float,
 
-    val poster_path: String,
+    val poster_path: String? = "",
 
     val first_air_date: String,
 
