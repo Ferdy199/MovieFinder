@@ -2,6 +2,7 @@ package com.ferdsapp.moviefinder.core.data.repository
 
 import android.content.SharedPreferences
 import android.util.Log
+import com.ferdsapp.moviefinder.core.data.model.entity.login.LoginEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.movie.MovieEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.tvShow.TvShowEntity
 import com.ferdsapp.moviefinder.core.data.model.network.login.GetTokenLogin
@@ -106,7 +107,7 @@ class MovieRepository private constructor(
                             emit(Resource.Empty)
                         }
                         is ApiResponse.Error -> {
-                            emit(Resource.Error(apiResponse.errorMessage))
+                            emit(Resource.Error(apiResponse.errorMessage, apiResponse.data))
                         }
                     }
                 }
@@ -174,8 +175,8 @@ class MovieRepository private constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun loginProcess(username: String, password: String): Flow<Resource<LoginResponse>> {
-        return flow<Resource<LoginResponse>> {
+    override fun loginProcess(username: String, password: String): Flow<Resource<LoginEntity>> {
+        return flow {
             try {
                 val requestToken = sharedPreferences.getString(Constant.REQUEST_TOKEN, "")
                 Log.d("MovieFinder Repository", "loginProcess token: $requestToken")
@@ -185,13 +186,16 @@ class MovieRepository private constructor(
                         .collect { apiResponse ->
                             when(apiResponse){
                                 is ApiResponse.Success -> {
-                                    emit(Resource.Success(apiResponse.data))
+                                    val loginEntity = DataMapper.mapLoginResponsesEntities(apiResponse.data)
+                                    emit(Resource.Success(loginEntity))
                                 }
                                 is ApiResponse.Empty -> {
                                     emit(Resource.Empty)
                                 }
                                 is ApiResponse.Error -> {
-                                    emit(Resource.Error(apiResponse.errorMessage))
+                                    val loginEntity = apiResponse.data?.let { DataMapper.mapLoginResponsesEntities(it) }
+                                    Log.d("MovieFinder Repository", "loginProcess error: $loginEntity")
+                                    emit(Resource.Error(apiResponse.errorMessage, data = loginEntity))
                                 }
                             }
                         }

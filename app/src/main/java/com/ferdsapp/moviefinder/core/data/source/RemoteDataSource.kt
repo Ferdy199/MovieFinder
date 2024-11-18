@@ -8,21 +8,26 @@ import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.movie.ItemMov
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.tvShow.ItemTvShowPlaying
 import com.ferdsapp.moviefinder.core.data.source.network.ApiService
 import com.ferdsapp.moviefinder.core.data.utils.ApiResponse
+import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import retrofit2.HttpException
 
-class RemoteDataSource private constructor(private val apiService: ApiService) {
+class RemoteDataSource private constructor(
+    private val apiService: ApiService,
+    private val gson: Gson
+) {
 
     //init manual injection
     companion object{
         @Volatile
         private var instance: RemoteDataSource? = null
 
-        fun getInstance(service: ApiService): RemoteDataSource {
+        fun getInstance(service: ApiService, gson: Gson): RemoteDataSource {
             return instance ?: synchronized(this){
-                instance ?: RemoteDataSource(service)
+                instance ?: RemoteDataSource(service, gson)
             }
         }
     }
@@ -88,17 +93,20 @@ class RemoteDataSource private constructor(private val apiService: ApiService) {
                 val response = apiService.getLoginToken(
                     authToken = "Bearer $token"
                 )
-                if (response != null){
-                    emit(ApiResponse.Success(response))
-                }else{
-                    emit(ApiResponse.Empty)
+                when(response.success){
+                    true -> {
+                        emit(ApiResponse.Success(response))
+                    }
+                    false -> {
+                        emit(ApiResponse.Error(response.success.toString(), response))
+                    }
                 }
 
             }catch (e: Exception){
                 emit(ApiResponse.Error(e.message.toString()))
 
             }
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
     suspend fun loginProcess(requestToken: String, username: String, password: String): Flow<ApiResponse<LoginResponse>> {
@@ -111,14 +119,30 @@ class RemoteDataSource private constructor(private val apiService: ApiService) {
                     username = username,
                     password = password
                 )
-                if (response != null){
-                    emit(ApiResponse.Success(response))
-                }else{
-                    emit(ApiResponse.Empty)
+                when(response.success){
+                    true -> {
+                        emit(ApiResponse.Success(response))
+                    }
+                    false -> {
+                        emit(ApiResponse.Error(response.success.toString(), data = response))
+                    }
                 }
-            }catch (e: Exception){
+            }catch (e: HttpException){
+                val errorBody = e.response()?.errorBody()?.string()
+                val errorResponse = gsonToResponse<LoginResponse>(errorBody.toString())
+                Log.d("MovieFinder DataSource", "loginProcess error: $errorBody")
+                emit(ApiResponse.Error(e.message.toString(), data = errorResponse))
+            } catch (e: Exception){
                 emit(ApiResponse.Error(e.message.toString()))
             }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    private inline fun <reified T> gsonToResponse(json: String) : T? {
+        return try {
+            gson.fromJson(json, T::class.java)
+        }catch (e: Exception){
+            null
         }
     }
 }

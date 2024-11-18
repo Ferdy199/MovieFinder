@@ -6,10 +6,12 @@ import com.ferdsapp.moviefinder.core.data.source.network.ApiConfig
 import com.ferdsapp.moviefinder.core.data.repository.MovieRepository
 import com.ferdsapp.moviefinder.core.domain.usecase.MovieInteractor
 import com.ferdsapp.moviefinder.core.domain.usecase.MovieUseCase
+import com.google.gson.Gson
 
 object Injection {
     fun provideRepository(context: Context) : MovieRepository {
-        val remoteDataSource = RemoteDataSource.getInstance(ApiConfig.provideApiService())
+        val gson = Gson()
+        val remoteDataSource = RemoteDataSource.getInstance(ApiConfig.provideApiService(), gson)
         val sharedPreferences = context.getSharedPreferences("MovieFinder", Context.MODE_PRIVATE)
 
         return MovieRepository.getInstance(remoteDataSource, sharedPreferences)

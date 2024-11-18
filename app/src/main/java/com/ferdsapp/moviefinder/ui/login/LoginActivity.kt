@@ -65,11 +65,22 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun observeTokenValidate(){
+        val sharedPreferences = getSharedPreferences("MovieFinder", MODE_PRIVATE)
         loginViewModel.getTokenValidate.observe(this) { getTokenValidate ->
             when (getTokenValidate) {
                 is Resource.Success -> {
                     Log.d("Login Activity", "response Success: ${getTokenValidate.data}")
-                    tokenValidate = getTokenValidate.data
+                    loginViewModel.getSessionInvalid(getTokenValidate.data).observe(this){ session ->
+                        when(session){
+                            true -> {
+                                tokenValidate = getTokenValidate.data
+                            }
+                            false -> {
+                                sharedPreferences.edit().remove(Constant.SESSION_REQUEST_TOKEN_VALIDATE).apply()
+                            }
+                        }
+
+                    }
                 }
                 is Resource.Empty -> {
                     Log.d("Login Activity", "response Empty")
@@ -144,7 +155,7 @@ class LoginActivity : AppCompatActivity() {
                         }
                         is Resource.Error -> {
                             Log.d("Login Activity", "response error: ${apiResponse.message}")
-                            showCustomSnackbar(binding.root, apiResponse.message)
+                            showCustomSnackbar(binding.root, apiResponse.data?.expires_at ?: apiResponse.data?.status_message ?: "unknown Error")
                         }
                         is Resource.Success -> {
                             val intent = Intent(this, MainActivity::class.java)

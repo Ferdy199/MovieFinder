@@ -1,7 +1,9 @@
 package com.ferdsapp.moviefinder.core.utils
 
+import com.ferdsapp.moviefinder.core.data.model.entity.login.LoginEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.movie.MovieEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.tvShow.TvShowEntity
+import com.ferdsapp.moviefinder.core.data.model.network.login.LoginResponse
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.movie.ItemMovePlaying
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.tvShow.ItemTvShowPlaying
 
@@ -51,4 +53,11 @@ object DataMapper {
         }
         return tvShowList
     }
+
+    fun mapLoginResponsesEntities(input: LoginResponse) = LoginEntity(
+        input.success,
+        input.status_message,
+        input.status_code,
+        input.expires_at
+    )
 }

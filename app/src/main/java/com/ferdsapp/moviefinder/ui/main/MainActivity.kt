@@ -59,6 +59,10 @@ class MainActivity : AppCompatActivity() {
                 is Resource.Error -> {
                     Log.d("MainActivity", "response Error: ${apiResponse.message}")
                 }
+
+                is Resource.Loading -> {
+                    Log.d("MainActivity", "response Loading")
+                }
             }
         }
     }
