@@ -150,16 +150,25 @@ class LoginActivity : AppCompatActivity() {
                 loginViewModel.loginProcess(username = username, password = password).observe(this){ apiResponse ->
                     when(apiResponse){
                         is Resource.Empty -> {
+                            binding.loadingDialog.root.visibility = View.GONE
+                            binding.loginCard.visibility = View.VISIBLE
                             Log.d("Login Activity", "response Empty")
                             showCustomSnackbar(binding.root, "response Empty")
                         }
                         is Resource.Error -> {
+                            binding.loadingDialog.root.visibility = View.GONE
+                            binding.loginCard.visibility = View.VISIBLE
                             Log.d("Login Activity", "response error: ${apiResponse.message}")
                             showCustomSnackbar(binding.root, apiResponse.data?.expires_at ?: apiResponse.data?.status_message ?: "unknown Error")
                         }
                         is Resource.Success -> {
+                            binding.loadingDialog.root.visibility = View.GONE
                             val intent = Intent(this, MainActivity::class.java)
                             startActivity(intent)
+                        }
+                        is Resource.Loading -> {
+                            binding.loadingDialog.root.visibility = View.VISIBLE
+                            binding.loginCard.visibility = View.GONE
                         }
                         else -> {
                             showCustomSnackbar(binding.root, "unknown Error")
