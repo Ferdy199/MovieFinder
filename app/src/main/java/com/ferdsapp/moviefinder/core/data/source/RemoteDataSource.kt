@@ -35,6 +35,7 @@ class RemoteDataSource private constructor(
     //function here
     suspend fun getMovieNowPlaying(): Flow<ApiResponse<ArrayList<ItemMovePlaying>>>{
         return flow {
+            emit(ApiResponse.Loading)
             try {
                 val token = BuildConfig.API_TOKEN
                 val response = apiService.getMoviePlayingList(
@@ -61,6 +62,7 @@ class RemoteDataSource private constructor(
 
     suspend fun getTvShowNowPlaying(): Flow<ApiResponse<ArrayList<ItemTvShowPlaying>>>{
         return flow {
+            emit(ApiResponse.Loading)
             try {
                 val token = BuildConfig.API_TOKEN
                 val response = apiService.getTvShowPlayingList(
@@ -87,6 +89,7 @@ class RemoteDataSource private constructor(
 
     suspend fun getLoginToken(): Flow<ApiResponse<GetTokenLogin>>{
         return flow {
+            emit(ApiResponse.Loading)
             try {
                 val token = BuildConfig.API_TOKEN
                 val response = apiService.getLoginToken(
@@ -110,6 +113,7 @@ class RemoteDataSource private constructor(
 
     suspend fun loginProcess(requestToken: String, username: String, password: String): Flow<ApiResponse<LoginResponse>> {
         return flow {
+            emit(ApiResponse.Loading)
             try {
                 emit(ApiResponse.Loading)
                 val token = BuildConfig.API_TOKEN
