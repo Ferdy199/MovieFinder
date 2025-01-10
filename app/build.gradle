@@ -60,6 +60,8 @@ dependencies {
     implementation libs.androidx.constraintlayout
     implementation libs.androidx.recyclerview
     implementation libs.glide
+    implementation libs.shimmer
+    implementation libs.lottie
 
     //testing
     testImplementation libs.junit

@@ -33,7 +33,6 @@ class RemoteDataSource private constructor(
     }
 
     //function here
-
     suspend fun getMovieNowPlaying(): Flow<ApiResponse<ArrayList<ItemMovePlaying>>>{
         return flow {
             try {
@@ -112,6 +111,7 @@ class RemoteDataSource private constructor(
     suspend fun loginProcess(requestToken: String, username: String, password: String): Flow<ApiResponse<LoginResponse>> {
         return flow {
             try {
+                emit(ApiResponse.Loading)
                 val token = BuildConfig.API_TOKEN
                 val response = apiService.loginProcess(
                     authToken = "Bearer $token",

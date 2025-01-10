@@ -2,6 +2,7 @@ package com.ferdsapp.moviefinder.ui.main
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
@@ -52,6 +53,8 @@ class MainActivity : AppCompatActivity() {
                 is Resource.Success -> {
                     Log.d("MainActivity", "response Success")
                     onSuccess(apiResponse.data)
+                    binding.loadingShimmer1.visibility = View.GONE
+                    binding.loadingShimmer2.visibility = View.GONE
                 }
                 is Resource.Empty -> {
                     Log.d("MainActivity", "response Empty")
@@ -61,6 +64,8 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 is Resource.Loading -> {
+                    binding.loadingShimmer1.visibility = View.VISIBLE
+                    binding.loadingShimmer2.visibility = View.VISIBLE
                     Log.d("MainActivity", "response Loading")
                 }
             }

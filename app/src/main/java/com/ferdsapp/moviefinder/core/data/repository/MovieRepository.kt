@@ -57,6 +57,10 @@ class MovieRepository private constructor(
                         is ApiResponse.Error -> {
                             emit(Resource.Error(apiResponse.errorMessage))
                         }
+
+                        is ApiResponse.Loading -> {
+                            emit(Resource.Loading)
+                        }
                     }
                 }
             }catch (e: Exception){
@@ -80,6 +84,10 @@ class MovieRepository private constructor(
                         }
                         is ApiResponse.Error -> {
                             emit(Resource.Error(apiResponse.errorMessage))
+                        }
+
+                        is ApiResponse.Loading -> {
+                            emit(Resource.Loading)
                         }
                     }
                 }
@@ -109,7 +117,10 @@ class MovieRepository private constructor(
                         is ApiResponse.Error -> {
                             emit(Resource.Error(apiResponse.errorMessage, apiResponse.data))
                         }
-                    }
+
+                       is ApiResponse.Loading -> {
+                           emit(Resource.Loading)
+                       }                    }
                 }
             }catch (e: Exception){
                 emit(Resource.Error(e.message.toString()))
@@ -196,6 +207,10 @@ class MovieRepository private constructor(
                                     val loginEntity = apiResponse.data?.let { DataMapper.mapLoginResponsesEntities(it) }
                                     Log.d("MovieFinder Repository", "loginProcess error: $loginEntity")
                                     emit(Resource.Error(apiResponse.errorMessage, data = loginEntity))
+                                }
+
+                                is ApiResponse.Loading -> {
+                                    emit(Resource.Loading)
                                 }
                             }
                         }

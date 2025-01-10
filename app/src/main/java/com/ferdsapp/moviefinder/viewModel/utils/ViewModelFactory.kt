@@ -9,16 +9,6 @@ import com.ferdsapp.moviefinder.viewModel.login.LoginViewModel
 import com.ferdsapp.moviefinder.viewModel.main.MainViewModel
 
 class ViewModelFactory private constructor(private val movieUseCase: MovieUseCase): ViewModelProvider.NewInstanceFactory(){
-    companion object {
-        @Volatile
-        private var instance: ViewModelFactory? = null
-
-        fun getInstance(context: Context): ViewModelFactory {
-            return instance ?: synchronized(this) {
-                instance ?: ViewModelFactory(Injection.provideMovieUseCase(context))
-            }
-        }
-    }
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -30,6 +20,17 @@ class ViewModelFactory private constructor(private val movieUseCase: MovieUseCas
                LoginViewModel(movieUseCase) as T
            }
             else -> throw Throwable("Unknown ViewModel class: " + modelClass.name)
+        }
+    }
+
+    companion object {
+        @Volatile
+        private var instance: ViewModelFactory? = null
+
+        fun getInstance(context: Context): ViewModelFactory {
+            return instance ?: synchronized(this) {
+                instance ?: ViewModelFactory(Injection.provideMovieUseCase(context))
+            }
         }
     }
 }

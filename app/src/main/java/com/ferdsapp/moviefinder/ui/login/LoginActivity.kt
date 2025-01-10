@@ -38,7 +38,7 @@ class LoginActivity : AppCompatActivity() {
     private var tokenLogin = ""
     private var tokenValidate = ""
     private var tokenExp = ""
-    private var sessionValid: Boolean? = null
+    private var sessionValid = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,8 +90,10 @@ class LoginActivity : AppCompatActivity() {
                     Log.d("Login Activity", "response error: ${getTokenValidate.message}")
                     showCustomSnackbar(binding.root, getTokenValidate.message)
                 }
-                else -> {
-                    Log.d("Login Activity", "unknown Error")
+
+                is Resource.Loading -> {
+//                    binding.loginCard.visibility = View.GONE
+                    binding.loadingAnimation.visibility = View.VISIBLE
                 }
             }
         }
@@ -117,8 +119,9 @@ class LoginActivity : AppCompatActivity() {
                     Log.d("Login Activity", "response error: ${apiResponse.message}")
                     showCustomSnackbar(binding.root, apiResponse.message)
                 }
-                else -> {
-                    Log.d("Login Activity", "unknown Error")
+                is Resource.Loading -> {
+//                    binding.loginCard.visibility = View.GONE
+                    binding.loadingAnimation.visibility = View.VISIBLE
                 }
             }
         }
@@ -139,7 +142,7 @@ class LoginActivity : AppCompatActivity() {
                 sessionValid = key
 
                 Log.d("Login Activity", "checkRequestToken: sessionValid $sessionValid")
-                checkSessionValid(sessionValid!!, username, password)
+                checkSessionValid(sessionValid, username, password)
             }
         }
     }
@@ -158,8 +161,13 @@ class LoginActivity : AppCompatActivity() {
                             showCustomSnackbar(binding.root, apiResponse.data?.expires_at ?: apiResponse.data?.status_message ?: "unknown Error")
                         }
                         is Resource.Success -> {
+                            binding.loadingAnimation.visibility = View.GONE
                             val intent = Intent(this, MainActivity::class.java)
                             startActivity(intent)
+                        }
+                        is Resource.Loading -> {
+//                            binding.loginCard.visibility = View.GONE
+                            binding.loadingAnimation.visibility = View.VISIBLE
                         }
                         else -> {
                             showCustomSnackbar(binding.root, "unknown Error")

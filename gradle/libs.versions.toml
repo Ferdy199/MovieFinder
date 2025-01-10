@@ -19,6 +19,8 @@ activity = "1.9.3"
 constraintlayout = "2.1.4"
 recyclerViewVersion = "1.1.0"
 retrofit = "2.9.0"
+shimmer = "0.5.0"
+lottie = "6.4.1"
 
 [libraries]
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activityKtx" }
@@ -40,6 +42,8 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+shimmer = { module = "com.facebook.shimmer:shimmer", version.ref = "shimmer" }
+lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
