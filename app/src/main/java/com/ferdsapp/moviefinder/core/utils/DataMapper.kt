@@ -55,9 +55,10 @@ object DataMapper {
     }
 
     fun mapLoginResponsesEntities(input: LoginResponse) = LoginEntity(
-        input.success,
-        input.status_message,
-        input.status_code,
-        input.expires_at
+        success = input.success,
+        status_message = input.status_message,
+        request_token = input.request_token,
+        status_code = input.status_code,
+        expires_at = input.expires_at
     )
 }

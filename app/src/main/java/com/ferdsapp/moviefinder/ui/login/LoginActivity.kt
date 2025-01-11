@@ -46,16 +46,29 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        with(binding.loginWebView){
+        binding.loginWebView.apply {
             webViewClient = webViewClients
-            settings.javaScriptEnabled = true
+            settings.apply {
+                javaScriptEnabled = true
+                allowFileAccess = false
+                domStorageEnabled = true
+            }
+        }
+
+        binding.signUp.setOnClickListener {
+            binding.loginWebView.visibility = WebView.VISIBLE
+            binding.loginCard.visibility = CardView.GONE
+            binding.signUpMessage.visibility = View.GONE
+            binding.loginLogo.visibility = View.GONE
+            binding.loginWebView.loadUrl("https://www.themoviedb.org/signup")
+            handleBackPressed(false)
         }
 
         //observe token validate
         observeTokenValidate()
 
         //observe request token
-        observeRequestToken()
+//        observeRequestToken()
 
         binding.loginButton.setOnClickListener {
             val username = binding.username.text.toString()
@@ -69,25 +82,29 @@ class LoginActivity : AppCompatActivity() {
         loginViewModel.getTokenValidate.observe(this) { getTokenValidate ->
             when (getTokenValidate) {
                 is Resource.Success -> {
-                    Log.d("Login Activity", "response Success: ${getTokenValidate.data}")
+                    Log.d("Login Activity", "observeTokenValidate Success: ${getTokenValidate.data}")
                     loginViewModel.getSessionInvalid(getTokenValidate.data).observe(this){ session ->
+                        Log.d("Login Activity", "observeTokenValidate: $session")
                         when(session){
                             true -> {
                                 tokenValidate = getTokenValidate.data
                             }
                             false -> {
                                 sharedPreferences.edit().remove(Constant.SESSION_REQUEST_TOKEN_VALIDATE).apply()
+                                getTokenLogin()
                             }
                         }
 
                     }
                 }
                 is Resource.Empty -> {
-                    Log.d("Login Activity", "response Empty")
+                    Log.d("Login Activity", "observeTokenValidate Empty")
+                    binding.loadingAnimation.visibility = View.GONE
                     getTokenLogin()
                 }
                 is Resource.Error -> {
-                    Log.d("Login Activity", "response error: ${getTokenValidate.message}")
+                    Log.d("Login Activity", "observeTokenValidate error: ${getTokenValidate.message}")
+                    binding.loadingAnimation.visibility = View.GONE
                     showCustomSnackbar(binding.root, getTokenValidate.message)
                 }
 
@@ -99,24 +116,28 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun observeRequestToken(){
-        loginViewModel.getRequestToken.observe(this){ requestToken ->
-            tokenLogin = requestToken
-        }
-    }
+//    private fun observeRequestToken(){
+//        loginViewModel.getRequestToken.observe(this){ requestToken ->
+//            tokenLogin = requestToken
+//        }
+//    }
 
     private fun getTokenLogin(){
-        loginViewModel.getTokenLogin.observe(this) { apiResponse ->
+        loginViewModel.getRequestToken.observe(this) { apiResponse ->
             when (apiResponse) {
                 is Resource.Success -> {
+                    Log.d("Login Activity", "getTokenLogin : success")
+                    binding.loadingAnimation.visibility = View.GONE
                     tokenExp = apiResponse.data.expires_at
                     tokenLogin = apiResponse.data.request_token
                 }
                 is Resource.Empty -> {
-                    Log.d("Login Activity", "response error: empty")
+                    Log.d("Login Activity", "getTokenLogin : empty")
+                    binding.loadingAnimation.visibility = View.GONE
                 }
                 is Resource.Error -> {
-                    Log.d("Login Activity", "response error: ${apiResponse.message}")
+                    Log.d("Login Activity", "getTokenLogin error: ${apiResponse.message}")
+                    binding.loadingAnimation.visibility = View.GONE
                     showCustomSnackbar(binding.root, apiResponse.message)
                 }
                 is Resource.Loading -> {
@@ -133,8 +154,10 @@ class LoginActivity : AppCompatActivity() {
             Log.d("Login Activity", "checkRequestToken: first condition")
             binding.loginWebView.visibility = WebView.VISIBLE
             binding.loginCard.visibility = CardView.GONE
+            binding.signUpMessage.visibility = View.GONE
+            binding.loginLogo.visibility = View.GONE
             binding.loginWebView.loadUrl("https://www.themoviedb.org/authenticate/$tokenLogin")
-            handleBackPressed()
+            handleBackPressed(true)
         }else{
             Log.d("Login Activity", "checkRequestToken: second condition token: $tokenValidate")
             loginViewModel.getSessionInvalid(tokenValidate).observe(this) { key ->
@@ -153,11 +176,13 @@ class LoginActivity : AppCompatActivity() {
                 loginViewModel.loginProcess(username = username, password = password).observe(this){ apiResponse ->
                     when(apiResponse){
                         is Resource.Empty -> {
-                            Log.d("Login Activity", "response Empty")
+                            Log.d("Login Activity", "checkSessionValid Empty")
+                            binding.loadingAnimation.visibility = View.GONE
                             showCustomSnackbar(binding.root, "response Empty")
                         }
                         is Resource.Error -> {
-                            Log.d("Login Activity", "response error: ${apiResponse.message}")
+                            Log.d("Login Activity", "checkSessionValid error: ${apiResponse.message}")
+                            binding.loadingAnimation.visibility = View.GONE
                             showCustomSnackbar(binding.root, apiResponse.data?.expires_at ?: apiResponse.data?.status_message ?: "unknown Error")
                         }
                         is Resource.Success -> {
@@ -184,7 +209,7 @@ class LoginActivity : AppCompatActivity() {
                     binding.loginWebView.visibility = WebView.VISIBLE
                     binding.loginCard.visibility = CardView.GONE
                     binding.loginWebView.loadUrl("https://www.themoviedb.org/authenticate/$tokenLogin")
-                    handleBackPressed()
+                    handleBackPressed(true)
                 }
             }
         }
@@ -198,11 +223,15 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleBackPressed(){
+    private fun handleBackPressed(isRequestToken: Boolean){
         onBackPressedDispatcher.addCallback(this){
-            binding.loginCard.visibility = CardView.VISIBLE
-            binding.loginWebView.visibility = WebView.GONE
-            handleRequestToken()
+            binding.apply {
+                loginCard.visibility = CardView.VISIBLE
+                loginLogo.visibility = View.VISIBLE
+                signUpMessage.visibility = View.VISIBLE
+                loginWebView.visibility = View.GONE
+            }
+            if (isRequestToken) handleRequestToken()
         }
     }
 
@@ -220,9 +249,9 @@ class LoginActivity : AppCompatActivity() {
         }
 
         snackbar.setBackgroundTint(ContextCompat.getColor(this, R.color.white))
-        snackbar.setText("") // Hilangkan teks default
-        snackbar.view.setPadding(0, 0, 0, 0) // Hilangkan padding default Snackbar
-        (snackbar.view as ViewGroup).addView(customview) // Tambahkan custom view
+        snackbar.setText("")
+        snackbar.view.setPadding(0, 0, 0, 0)
+        (snackbar.view as ViewGroup).addView(customview)
         snackbar.show()
     }
 }

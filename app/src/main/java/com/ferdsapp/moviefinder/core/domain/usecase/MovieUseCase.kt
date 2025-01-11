@@ -11,10 +11,10 @@ import kotlinx.coroutines.flow.Flow
 interface MovieUseCase {
     fun getNowMoviePlaying(): Flow<Resource<ArrayList<MovieEntity>>>
     fun getTvShowPlaying(): Flow<Resource<ArrayList<TvShowEntity>>>
-    fun getLoginToken(): Flow<Resource<GetTokenLogin>>
+    fun getRequestToken(): Flow<Resource<GetTokenLogin>>
     fun getSessionInvalid(session: String): Flow<Boolean>
     fun saveTokenValidate(token: String)
     fun getTokenValidate(): Flow<Resource<String>>
-    fun getRequestToken(): Flow<String>
+    fun getLoginToken(): Flow<String>
     fun loginProcess(username: String, password: String): Flow<Resource<LoginEntity>>
 }

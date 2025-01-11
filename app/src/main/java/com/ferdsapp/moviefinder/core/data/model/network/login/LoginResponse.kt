@@ -9,6 +9,9 @@ data class LoginResponse(
     @field:SerializedName("expires_at")
     val expires_at: String = "",
 
+    @field:SerializedName("request_token")
+    val request_token: String = "",
+
     @field:SerializedName("status_code")
     val status_code: Int = 0,
 

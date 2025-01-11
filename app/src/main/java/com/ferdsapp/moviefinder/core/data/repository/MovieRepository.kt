@@ -6,7 +6,6 @@ import com.ferdsapp.moviefinder.core.data.model.entity.login.LoginEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.movie.MovieEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.tvShow.TvShowEntity
 import com.ferdsapp.moviefinder.core.data.model.network.login.GetTokenLogin
-import com.ferdsapp.moviefinder.core.data.model.network.login.LoginResponse
 import com.ferdsapp.moviefinder.core.data.source.RemoteDataSource
 import com.ferdsapp.moviefinder.core.data.utils.ApiResponse
 import com.ferdsapp.moviefinder.core.data.utils.Resource
@@ -97,7 +96,7 @@ class MovieRepository private constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun getTokenLogin(): Flow<Resource<GetTokenLogin>> {
+    override fun getRequestToken(): Flow<Resource<GetTokenLogin>> {
         return flow<Resource<GetTokenLogin>> {
             try {
                 remoteDataSource.getLoginToken().collect { apiResponse ->
@@ -137,6 +136,7 @@ class MovieRepository private constructor(
         return flow {
             try {
                 val getValidateToken = sharedPreferences.getString(Constant.SESSION_REQUEST_TOKEN_VALIDATE, "")
+                Log.d("Movie Repository", "getRequestTokenValidate: $getValidateToken")
                 if (!getValidateToken.isNullOrEmpty()){
                     emit(Resource.Success(getValidateToken))
                 }else{
@@ -155,14 +155,15 @@ class MovieRepository private constructor(
         sharedPreferences.edit().putString(Constant.REQUEST_TOKEN, token).apply()
     }
 
-    override fun getRequestToken(): Flow<String> {
+    override fun getTokenLogin(): Flow<String> {
         return flow {
-            val requestToken = sharedPreferences.getString(Constant.REQUEST_TOKEN, "")
-            if (!requestToken.isNullOrEmpty()){
-                Log.d("MovieFinder Repository", "getRequestToken: sendToken $requestToken")
-                emit(requestToken)
+            val sessionLoginToken = sharedPreferences.getString(Constant.SESSION_LOGIN_TOKEN_VALIDATE, "")
+            if (!sessionLoginToken.isNullOrEmpty()){
+                Log.d("MovieFinder Repository", "getTokenLogin: getTokenLogin $sessionLoginToken")
+                emit(sessionLoginToken)
             }else{
-                Log.d("MovieFinder Repository", "failed getRequestToken")
+                emit("failed")
+                Log.d("MovieFinder Repository", "failed getTokenLogin")
             }
         }.flowOn(Dispatchers.IO)
     }
@@ -198,6 +199,8 @@ class MovieRepository private constructor(
                             when(apiResponse){
                                 is ApiResponse.Success -> {
                                     val loginEntity = DataMapper.mapLoginResponsesEntities(apiResponse.data)
+                                    sharedPreferences.edit().putString(Constant.LOGIN_TOKEN, loginEntity.request_token).apply()
+                                    sharedPreferences.edit().putString(Constant.SESSION_LOGIN_TOKEN_VALIDATE, loginEntity.expires_at).apply()
                                     emit(Resource.Success(loginEntity))
                                 }
                                 is ApiResponse.Empty -> {

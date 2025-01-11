@@ -9,4 +9,9 @@
     <string name="toolbar_logo">toolbar_logo</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
+    <string name="login">Sign In</string>
+    <string name="licences">Powered by the movieDB</string>
+    <string name="login_logo">login_logo</string>
+    <string name="newcomers_here">Newcomers here ?</string>
+    <string name="sign_up">Sign up !</string>
 </resources>

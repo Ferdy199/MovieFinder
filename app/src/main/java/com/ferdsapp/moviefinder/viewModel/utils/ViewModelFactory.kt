@@ -7,6 +7,7 @@ import com.ferdsapp.moviefinder.core.di.Injection
 import com.ferdsapp.moviefinder.core.domain.usecase.MovieUseCase
 import com.ferdsapp.moviefinder.viewModel.login.LoginViewModel
 import com.ferdsapp.moviefinder.viewModel.main.MainViewModel
+import com.ferdsapp.moviefinder.viewModel.splash.SplashViewModel
 
 class ViewModelFactory private constructor(private val movieUseCase: MovieUseCase): ViewModelProvider.NewInstanceFactory(){
 
@@ -18,6 +19,9 @@ class ViewModelFactory private constructor(private val movieUseCase: MovieUseCas
             }
            modelClass.isAssignableFrom(LoginViewModel::class.java) -> {
                LoginViewModel(movieUseCase) as T
+           }
+           modelClass.isAssignableFrom(SplashViewModel::class.java) -> {
+               SplashViewModel(movieUseCase) as T
            }
             else -> throw Throwable("Unknown ViewModel class: " + modelClass.name)
         }
