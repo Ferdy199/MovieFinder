@@ -20,8 +20,11 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class MovieRepository private constructor(
+@Singleton
+class MovieRepository @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
     private val sharedPreferences: SharedPreferences
 ) : IMoveRepository {

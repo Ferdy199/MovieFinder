@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.ferdsapp.moviefinder.R
+import com.ferdsapp.moviefinder.application.MyApplication
 import com.ferdsapp.moviefinder.ui.login.LoginActivity
 import com.ferdsapp.moviefinder.ui.main.MainActivity
 import com.ferdsapp.moviefinder.viewModel.splash.SplashViewModel
@@ -14,13 +15,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class SplashActivity : AppCompatActivity() {
 
+    @Inject
+    lateinit var factory: ViewModelFactory
+
     private val splashViewModel: SplashViewModel by viewModels {
-        ViewModelFactory.getInstance(this)
+        factory
     }
     override fun onCreate(savedInstanceState: Bundle?) {
+        (application as MyApplication).appComponent.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 

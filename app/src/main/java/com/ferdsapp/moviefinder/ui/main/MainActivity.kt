@@ -8,22 +8,27 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.ferdsapp.moviefinder.application.MyApplication
 import com.ferdsapp.moviefinder.core.data.utils.Resource
 import com.ferdsapp.moviefinder.databinding.ActivityMainBinding
 import com.ferdsapp.moviefinder.ui.adapter.MovieAdapter
 import com.ferdsapp.moviefinder.viewModel.main.MainViewModel
 import com.ferdsapp.moviefinder.viewModel.utils.ViewModelFactory
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
+    @Inject
+    lateinit var factory : ViewModelFactory
     private lateinit var binding: ActivityMainBinding
     private val mainViewModel: MainViewModel by viewModels {
-        ViewModelFactory.getInstance(this)
+        factory
     }
 
     private val movieAdapter: MovieAdapter by lazy { MovieAdapter() }
     private val tvShowAdapter: MovieAdapter by lazy { MovieAdapter() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        (application as MyApplication).appComponent.inject(this)
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

@@ -3,13 +3,16 @@ package com.ferdsapp.moviefinder.viewModel.utils
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.ferdsapp.moviefinder.core.di.AppScope
 import com.ferdsapp.moviefinder.core.di.Injection
 import com.ferdsapp.moviefinder.core.domain.usecase.MovieUseCase
 import com.ferdsapp.moviefinder.viewModel.login.LoginViewModel
 import com.ferdsapp.moviefinder.viewModel.main.MainViewModel
 import com.ferdsapp.moviefinder.viewModel.splash.SplashViewModel
+import javax.inject.Inject
 
-class ViewModelFactory private constructor(private val movieUseCase: MovieUseCase): ViewModelProvider.NewInstanceFactory(){
+@AppScope
+class ViewModelFactory @Inject constructor(private val movieUseCase: MovieUseCase): ViewModelProvider.NewInstanceFactory(){
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -27,14 +30,14 @@ class ViewModelFactory private constructor(private val movieUseCase: MovieUseCas
         }
     }
 
-    companion object {
-        @Volatile
-        private var instance: ViewModelFactory? = null
-
-        fun getInstance(context: Context): ViewModelFactory {
-            return instance ?: synchronized(this) {
-                instance ?: ViewModelFactory(Injection.provideMovieUseCase(context))
-            }
-        }
-    }
+//    companion object {
+//        @Volatile
+//        private var instance: ViewModelFactory? = null
+//
+//        fun getInstance(context: Context): ViewModelFactory {
+//            return instance ?: synchronized(this) {
+//                instance ?: ViewModelFactory(Injection.provideMovieUseCase(context))
+//            }
+//        }
+//    }
 }

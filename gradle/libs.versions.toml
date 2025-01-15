@@ -2,7 +2,7 @@
 activityKtx = "1.9.3"
 agp = "8.1.0"
 glide = "4.11.0"
-kotlin = "1.9.10"
+kotlin = "2.0.10"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -21,6 +21,9 @@ recyclerViewVersion = "1.1.0"
 retrofit = "2.9.0"
 shimmer = "0.5.0"
 lottie = "6.4.1"
+dagger = "2.52"
+fragmentKtx = "1.8.5"
+ksp = "2.0.10-1.0.24"
 
 [libraries]
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activityKtx" }
@@ -44,8 +47,12 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 shimmer = { module = "com.facebook.shimmer:shimmer", version.ref = "shimmer" }
 lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie"}
+dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
+dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
+androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp"}
 
