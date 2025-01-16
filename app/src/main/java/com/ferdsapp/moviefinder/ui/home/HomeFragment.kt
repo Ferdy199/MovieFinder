@@ -1,34 +1,35 @@
 package com.ferdsapp.moviefinder.ui.home
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.viewModels
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.coroutineScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.ferdsapp.moviefinder.R
+import com.ferdsapp.moviefinder.application.MyApplication
 import com.ferdsapp.moviefinder.core.data.utils.Resource
 import com.ferdsapp.moviefinder.databinding.FragmentHomeBinding
 import com.ferdsapp.moviefinder.ui.adapter.MovieAdapter
 import com.ferdsapp.moviefinder.viewModel.main.MainViewModel
 import com.ferdsapp.moviefinder.viewModel.utils.ViewModelFactory
+import javax.inject.Inject
 
 class HomeFragment : Fragment() {
+
+    @Inject
+    lateinit var factory: ViewModelFactory
 
     private var _binding : FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private val movieAdapter: MovieAdapter by lazy { MovieAdapter() }
     private val tvShowAdapter: MovieAdapter by lazy { MovieAdapter() }
     private val homeViewModel: MainViewModel by viewModels{
-        ViewModelFactory.getInstance(requireActivity())
+       factory
     }
 
 
@@ -39,6 +40,11 @@ class HomeFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (requireActivity().application as MyApplication).appComponent.inject(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
