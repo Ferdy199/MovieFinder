@@ -1,60 +1,92 @@
 package com.ferdsapp.moviefinder.ui.home
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.viewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.coroutineScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.ferdsapp.moviefinder.R
+import com.ferdsapp.moviefinder.core.data.utils.Resource
+import com.ferdsapp.moviefinder.databinding.FragmentHomeBinding
+import com.ferdsapp.moviefinder.ui.adapter.MovieAdapter
+import com.ferdsapp.moviefinder.viewModel.main.MainViewModel
+import com.ferdsapp.moviefinder.viewModel.utils.ViewModelFactory
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [HomeFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class HomeFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+    private var _binding : FragmentHomeBinding? = null
+    private val binding get() = _binding!!
+    private val movieAdapter: MovieAdapter by lazy { MovieAdapter() }
+    private val tvShowAdapter: MovieAdapter by lazy { MovieAdapter() }
+    private val homeViewModel: MainViewModel by viewModels{
+        ViewModelFactory.getInstance(requireActivity())
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment HomeFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            HomeFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        if (activity != null){
+            observeApiResponse(homeViewModel.movie, movieAdapter::setMovie)
+            observeApiResponse(homeViewModel.tvShow, tvShowAdapter::setMovie)
+
+            recyclerViewConfig(binding.rvMovie, movieAdapter)
+            recyclerViewConfig(binding.rvTvShow, tvShowAdapter)
+
+        }
+    }
+
+    private fun recyclerViewConfig(recyclerView: RecyclerView, adapter: MovieAdapter){
+        with(recyclerView){
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            setHasFixedSize(true)
+            this.adapter = adapter
+        }
+    }
+
+    private fun <T> observeApiResponse(
+        liveData: LiveData<Resource<ArrayList<T>>>,
+        onSuccess: (List<T>) -> Unit
+    ){
+        liveData.observe(viewLifecycleOwner){ apiResponse ->
+            when(apiResponse){
+                is Resource.Success -> {
+                    Log.d("MainActivity", "response Success ${apiResponse.data}")
+                    onSuccess(apiResponse.data)
+                    binding.loadingShimmer1.visibility = View.GONE
+                    binding.loadingShimmer2.visibility = View.GONE
+                }
+                is Resource.Empty -> {
+                    Log.d("MainActivity", "response Empty")
+                }
+                is Resource.Error -> {
+                    Log.d("MainActivity", "response Error: ${apiResponse.message}")
+                }
+
+                is Resource.Loading -> {
+                    binding.loadingShimmer1.visibility = View.VISIBLE
+                    binding.loadingShimmer2.visibility = View.VISIBLE
+                    Log.d("MainActivity", "response Loading")
                 }
             }
+        }
     }
 }

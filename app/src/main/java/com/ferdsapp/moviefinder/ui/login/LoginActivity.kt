@@ -109,18 +109,11 @@ class LoginActivity : AppCompatActivity() {
                 }
 
                 is Resource.Loading -> {
-//                    binding.loginCard.visibility = View.GONE
                     binding.loadingAnimation.visibility = View.VISIBLE
                 }
             }
         }
     }
-
-//    private fun observeRequestToken(){
-//        loginViewModel.getRequestToken.observe(this){ requestToken ->
-//            tokenLogin = requestToken
-//        }
-//    }
 
     private fun getTokenLogin(){
         loginViewModel.getRequestToken.observe(this) { apiResponse ->

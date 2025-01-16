@@ -1,74 +1,51 @@
 package com.ferdsapp.moviefinder.ui.main
 
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LiveData
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.ferdsapp.moviefinder.core.data.utils.Resource
+import androidx.fragment.app.Fragment
+import com.ferdsapp.moviefinder.R
 import com.ferdsapp.moviefinder.databinding.ActivityMainBinding
-import com.ferdsapp.moviefinder.ui.adapter.MovieAdapter
-import com.ferdsapp.moviefinder.viewModel.main.MainViewModel
-import com.ferdsapp.moviefinder.viewModel.utils.ViewModelFactory
+import com.ferdsapp.moviefinder.ui.home.HomeFragment
+import com.ferdsapp.moviefinder.ui.search.SearchFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val mainViewModel: MainViewModel by viewModels {
-        ViewModelFactory.getInstance(this)
-    }
-
-    private val movieAdapter: MovieAdapter by lazy { MovieAdapter() }
-    private val tvShowAdapter: MovieAdapter by lazy { MovieAdapter() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        observeApiResponse(mainViewModel.movie, movieAdapter::setMovie)
-        observeApiResponse(mainViewModel.tvShow, tvShowAdapter::setMovie)
+        val fragmentManager = supportFragmentManager
+        val homeFragment = HomeFragment()
+        val fragment = fragmentManager.findFragmentByTag(HomeFragment::class.java.simpleName)
 
-        recyclerViewConfig(binding.rvMovie, movieAdapter)
-        recyclerViewConfig(binding.rvTvShow, tvShowAdapter)
-
-    }
-
-    private fun recyclerViewConfig(recyclerView: RecyclerView, adapter: MovieAdapter){
-        with(recyclerView){
-            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            setHasFixedSize(true)
-            this.adapter = adapter
+        if (fragment !is HomeFragment){
+            fragmentManager
+                .beginTransaction()
+                .add(R.id.frame_container, homeFragment,HomeFragment::class.java.simpleName)
+                .commit()
         }
-    }
 
-    private fun <T> observeApiResponse(
-        liveData: LiveData<Resource<ArrayList<T>>>,
-        onSuccess: (List<T>) -> Unit
-    ){
-        liveData.observe(this){ apiResponse ->
-            when(apiResponse){
-                is Resource.Success -> {
-                    Log.d("MainActivity", "response Success")
-                    onSuccess(apiResponse.data)
-                    binding.loadingShimmer1.visibility = View.GONE
-                    binding.loadingShimmer2.visibility = View.GONE
+        binding.bottomNavigation.setOnItemSelectedListener { menuItem ->
+            when(menuItem.itemId){
+                R.id.bottom_home -> {
+                    replaceFragment(HomeFragment())
+                    true
                 }
-                is Resource.Empty -> {
-                    Log.d("MainActivity", "response Empty")
-                }
-                is Resource.Error -> {
-                    Log.d("MainActivity", "response Error: ${apiResponse.message}")
+                R.id.bottom_search -> {
+                    replaceFragment(SearchFragment())
+                    true
                 }
 
-                is Resource.Loading -> {
-                    binding.loadingShimmer1.visibility = View.VISIBLE
-                    binding.loadingShimmer2.visibility = View.VISIBLE
-                    Log.d("MainActivity", "response Loading")
-                }
+                else -> false
             }
+
         }
+
+    }
+
+    private fun replaceFragment(fragment: Fragment){
+        supportFragmentManager.beginTransaction().replace(R.id.frame_container, fragment).commit()
     }
 }
