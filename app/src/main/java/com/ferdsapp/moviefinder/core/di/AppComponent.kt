@@ -9,7 +9,7 @@ import dagger.Component
 @AppScope
 @Component(
     dependencies = [CoreComponent::class],
-    modules = [AppModule::class]
+    modules = [AppModule::class, FragmentModule::class]
 )
 interface AppComponent {
     @Component.Factory

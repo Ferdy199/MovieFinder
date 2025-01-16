@@ -6,6 +6,8 @@ import com.ferdsapp.moviefinder.core.data.model.network.login.GetTokenLogin
 import com.ferdsapp.moviefinder.core.data.model.network.login.LoginResponse
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.movie.ItemMovePlaying
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.tvShow.ItemTvShowPlaying
+import com.ferdsapp.moviefinder.core.data.model.network.search.ListSearchResponse
+import com.ferdsapp.moviefinder.core.data.model.network.search.SearchResponse
 import com.ferdsapp.moviefinder.core.data.source.network.ApiService
 import com.ferdsapp.moviefinder.core.data.utils.ApiResponse
 import com.google.gson.Gson
@@ -22,18 +24,6 @@ class RemoteDataSource @Inject constructor(
     private val apiService: ApiService,
     private val gson: Gson
 ) {
-
-    //init manual injection
-//    companion object{
-//        @Volatile
-//        private var instance: RemoteDataSource? = null
-//
-//        fun getInstance(service: ApiService, gson: Gson): RemoteDataSource {
-//            return instance ?: synchronized(this){
-//                instance ?: RemoteDataSource(service, gson)
-//            }
-//        }
-//    }
 
     //function here
     suspend fun getMovieNowPlaying(): Flow<ApiResponse<ArrayList<ItemMovePlaying>>>{
@@ -143,6 +133,29 @@ class RemoteDataSource @Inject constructor(
                 emit(ApiResponse.Error(e.message.toString()))
             }
         }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun getSearch(name:String) : Flow<ApiResponse<ArrayList<ListSearchResponse>>>{
+        return flow {
+            emit(ApiResponse.Loading)
+            try {
+                val token = BuildConfig.API_TOKEN
+                val response = apiService.getSearch(
+                    authToken = token,
+                    query = mapOf(
+                        "query" to name
+                    )
+                )
+                if (response.results.isNotEmpty()){
+                    emit(ApiResponse.Success(response.results))
+                }else{
+                    emit(ApiResponse.Empty)
+                }
+
+            }catch (e: Exception){
+                emit(ApiResponse.Error(e.message.toString(), null))
+            }
+        }
     }
 
     private inline fun <reified T> gsonToResponse(json: String) : T? {

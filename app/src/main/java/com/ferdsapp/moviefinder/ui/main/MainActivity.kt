@@ -7,8 +7,12 @@ import com.ferdsapp.moviefinder.R
 import com.ferdsapp.moviefinder.databinding.ActivityMainBinding
 import com.ferdsapp.moviefinder.ui.home.HomeFragment
 import com.ferdsapp.moviefinder.ui.search.SearchFragment
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
+    @Inject
+    lateinit var homeFragment: HomeFragment
+
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,7 +21,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val fragmentManager = supportFragmentManager
-        val homeFragment = HomeFragment()
         val fragment = fragmentManager.findFragmentByTag(HomeFragment::class.java.simpleName)
 
         if (fragment !is HomeFragment){

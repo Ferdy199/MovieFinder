@@ -24,6 +24,8 @@ class HomeFragment : Fragment() {
     @Inject
     lateinit var factory: ViewModelFactory
 
+
+
     private var _binding : FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private val movieAdapter: MovieAdapter by lazy { MovieAdapter() }

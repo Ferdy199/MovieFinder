@@ -4,6 +4,8 @@ import com.ferdsapp.moviefinder.core.data.model.network.login.GetTokenLogin
 import com.ferdsapp.moviefinder.core.data.model.network.login.LoginResponse
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.movie.ListMoviePlaying
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.tvShow.ListTvShowPlaying
+import com.ferdsapp.moviefinder.core.data.model.network.search.ListSearchResponse
+import com.ferdsapp.moviefinder.core.data.model.network.search.SearchResponse
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -37,4 +39,10 @@ interface ApiService {
         @Field("username") username: String,
         @Field("password") password: String,
     ): LoginResponse
+
+    @GET
+    suspend fun getSearch(
+        @Header("Authorization") authToken: String,
+        @QueryMap query: Map<String, String>
+    ): SearchResponse
 }
