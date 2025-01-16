@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.ferdsapp.moviefinder.R
+import com.ferdsapp.moviefinder.application.MyApplication
 import com.ferdsapp.moviefinder.core.data.utils.Resource
 import com.ferdsapp.moviefinder.core.utils.Constant
 import com.ferdsapp.moviefinder.databinding.ActivityLoginBinding
@@ -26,11 +27,16 @@ import com.ferdsapp.moviefinder.ui.main.MainActivity
 import com.ferdsapp.moviefinder.viewModel.login.LoginViewModel
 import com.ferdsapp.moviefinder.viewModel.utils.ViewModelFactory
 import com.google.android.material.snackbar.Snackbar
+import javax.inject.Inject
 
 class LoginActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var factory: ViewModelFactory
+
     private lateinit var binding: ActivityLoginBinding
     private val loginViewModel: LoginViewModel by viewModels {
-        ViewModelFactory.getInstance(this)
+        factory
     }
 
     private val webViewClients = WebViewClient()
@@ -42,6 +48,7 @@ class LoginActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        (application as MyApplication).appComponent.inject(this)
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)

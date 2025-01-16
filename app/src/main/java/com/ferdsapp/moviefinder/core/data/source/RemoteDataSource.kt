@@ -14,23 +14,26 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import retrofit2.HttpException
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class RemoteDataSource private constructor(
+@Singleton
+class RemoteDataSource @Inject constructor(
     private val apiService: ApiService,
     private val gson: Gson
 ) {
 
     //init manual injection
-    companion object{
-        @Volatile
-        private var instance: RemoteDataSource? = null
-
-        fun getInstance(service: ApiService, gson: Gson): RemoteDataSource {
-            return instance ?: synchronized(this){
-                instance ?: RemoteDataSource(service, gson)
-            }
-        }
-    }
+//    companion object{
+//        @Volatile
+//        private var instance: RemoteDataSource? = null
+//
+//        fun getInstance(service: ApiService, gson: Gson): RemoteDataSource {
+//            return instance ?: synchronized(this){
+//                instance ?: RemoteDataSource(service, gson)
+//            }
+//        }
+//    }
 
     //function here
     suspend fun getMovieNowPlaying(): Flow<ApiResponse<ArrayList<ItemMovePlaying>>>{

@@ -1,8 +1,9 @@
 package com.ferdsapp.moviefinder.core.domain.usecase
 
 import com.ferdsapp.moviefinder.core.domain.repository.IMoveRepository
+import javax.inject.Inject
 
-class MovieInteractor(private val movieRepository: IMoveRepository) : MovieUseCase {
+class MovieInteractor @Inject constructor(private val movieRepository: IMoveRepository) : MovieUseCase {
     override fun getNowMoviePlaying() =  movieRepository.getMoviePlaying()
     override fun getTvShowPlaying() = movieRepository.getTvShowPlaying()
     override fun getRequestToken() = movieRepository.getRequestToken()
