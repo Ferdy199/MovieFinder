@@ -2,10 +2,13 @@ package com.ferdsapp.moviefinder.core.utils
 
 import com.ferdsapp.moviefinder.core.data.model.entity.login.LoginEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.movie.MovieEntity
+import com.ferdsapp.moviefinder.core.data.model.entity.search.ListSearchEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.tvShow.TvShowEntity
 import com.ferdsapp.moviefinder.core.data.model.network.login.LoginResponse
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.movie.ItemMovePlaying
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.tvShow.ItemTvShowPlaying
+import com.ferdsapp.moviefinder.core.data.model.network.search.ListSearchResponse
+import com.ferdsapp.moviefinder.core.data.model.network.search.SearchResponse
 
 object DataMapper {
     fun mapResponsestMovieEntities(input: ArrayList<ItemMovePlaying>): ArrayList<MovieEntity> {
@@ -61,4 +64,41 @@ object DataMapper {
         status_code = input.status_code,
         expires_at = input.expires_at
     )
+
+    fun mapSearchResponsesEntities(input: ArrayList<ListSearchResponse>): ArrayList<ListSearchEntity> {
+        val searchList = ArrayList<ListSearchEntity>()
+
+        input.map {
+            val search = ListSearchEntity(
+                adult = it.adult,
+
+                backdrop_path = it.backdrop_path,
+
+                id = it.id,
+
+                title = it.title,
+
+                original_language = it.original_language,
+
+                original_title = it.original_title,
+
+                overview = it.overview,
+
+                poster_path = it.poster_path,
+
+                genre_ids = it.genre_ids ,
+
+                popularity = it.popularity,
+
+                release_date = it.release_date,
+
+                vote_average = it.vote_average,
+
+                vote_count = it.vote_count,
+            )
+            searchList.add(search)
+        }
+        return searchList
+    }
+
 }

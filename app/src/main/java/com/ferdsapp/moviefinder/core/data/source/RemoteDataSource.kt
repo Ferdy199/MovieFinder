@@ -155,7 +155,7 @@ class RemoteDataSource @Inject constructor(
             }catch (e: Exception){
                 emit(ApiResponse.Error(e.message.toString(), null))
             }
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
     private inline fun <reified T> gsonToResponse(json: String) : T? {

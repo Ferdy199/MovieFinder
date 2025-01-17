@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import com.ferdsapp.moviefinder.core.data.model.entity.login.LoginEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.movie.MovieEntity
+import com.ferdsapp.moviefinder.core.data.model.entity.search.ListSearchEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.tvShow.TvShowEntity
 import com.ferdsapp.moviefinder.core.data.model.network.login.GetTokenLogin
 import com.ferdsapp.moviefinder.core.data.source.RemoteDataSource
@@ -225,6 +226,26 @@ class MovieRepository @Inject constructor(
                 }
             }catch (e: Exception){
                 emit(Resource.Error(e.message.toString()))
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun getSearch(search: String): Flow<Resource<ArrayList<ListSearchEntity>>> {
+        return flow {
+            try {
+                remoteDataSource.getSearch(search).collect { searchResponse ->
+                    when(searchResponse){
+                        is ApiResponse.Empty -> emit(Resource.Empty)
+                        is ApiResponse.Error -> emit(Resource.Error(searchResponse.errorMessage, null))
+                        is ApiResponse.Loading -> emit(Resource.Loading)
+                        is ApiResponse.Success -> {
+                            val searchList = DataMapper.mapSearchResponsesEntities(searchResponse.data)
+                            emit(Resource.Success(searchList))
+                        }
+                    }
+                }
+            }catch (e: Exception){
+                emit(Resource.Error(e.message.toString(), null))
             }
         }.flowOn(Dispatchers.IO)
     }
