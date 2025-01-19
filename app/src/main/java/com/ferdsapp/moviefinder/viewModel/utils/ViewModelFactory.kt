@@ -4,10 +4,10 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ferdsapp.moviefinder.core.di.AppScope
-import com.ferdsapp.moviefinder.core.di.Injection
 import com.ferdsapp.moviefinder.core.domain.usecase.MovieUseCase
 import com.ferdsapp.moviefinder.viewModel.login.LoginViewModel
 import com.ferdsapp.moviefinder.viewModel.main.MainViewModel
+import com.ferdsapp.moviefinder.viewModel.search.SearchViewModel
 import com.ferdsapp.moviefinder.viewModel.splash.SplashViewModel
 import javax.inject.Inject
 
@@ -25,6 +25,9 @@ class ViewModelFactory @Inject constructor(private val movieUseCase: MovieUseCas
            }
            modelClass.isAssignableFrom(SplashViewModel::class.java) -> {
                SplashViewModel(movieUseCase) as T
+           }
+           modelClass.isAssignableFrom(SearchViewModel::class.java) -> {
+               SearchViewModel(movieUseCase) as T
            }
             else -> throw Throwable("Unknown ViewModel class: " + modelClass.name)
         }

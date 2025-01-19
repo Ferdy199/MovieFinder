@@ -24,8 +24,6 @@ class HomeFragment : Fragment() {
     @Inject
     lateinit var factory: ViewModelFactory
 
-
-
     private var _binding : FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private val movieAdapter: MovieAdapter by lazy { MovieAdapter() }
@@ -84,9 +82,14 @@ class HomeFragment : Fragment() {
                 }
                 is Resource.Empty -> {
                     Log.d("MainActivity", "response Empty")
+                    binding.loadingShimmer1.visibility = View.GONE
+                    binding.loadingShimmer2.visibility = View.GONE
+
                 }
                 is Resource.Error -> {
                     Log.d("MainActivity", "response Error: ${apiResponse.message}")
+                    binding.loadingShimmer1.visibility = View.GONE
+                    binding.loadingShimmer2.visibility = View.GONE
                 }
 
                 is Resource.Loading -> {

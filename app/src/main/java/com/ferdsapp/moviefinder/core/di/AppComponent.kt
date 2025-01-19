@@ -3,6 +3,7 @@ package com.ferdsapp.moviefinder.core.di
 import com.ferdsapp.moviefinder.ui.home.HomeFragment
 import com.ferdsapp.moviefinder.ui.login.LoginActivity
 import com.ferdsapp.moviefinder.ui.main.MainActivity
+import com.ferdsapp.moviefinder.ui.search.SearchFragment
 import com.ferdsapp.moviefinder.ui.splash.SplashActivity
 import dagger.Component
 
@@ -21,4 +22,5 @@ interface AppComponent {
     fun inject(fragment: HomeFragment)
     fun inject(loginActivity: LoginActivity)
     fun inject(splashActivity: SplashActivity)
+    fun inject(fragmentSearch: SearchFragment)
 }

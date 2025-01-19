@@ -4,10 +4,13 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.ferdsapp.moviefinder.R
+import com.ferdsapp.moviefinder.application.MyApplication
+import com.ferdsapp.moviefinder.core.di.DaggerAppComponent
 import com.ferdsapp.moviefinder.databinding.ActivityMainBinding
 import com.ferdsapp.moviefinder.ui.home.HomeFragment
 import com.ferdsapp.moviefinder.ui.search.SearchFragment
 import javax.inject.Inject
+
 
 class MainActivity : AppCompatActivity() {
     @Inject
@@ -19,6 +22,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        (application as MyApplication).appComponent.inject(this)
+
 
         val fragmentManager = supportFragmentManager
         val fragment = fragmentManager.findFragmentByTag(HomeFragment::class.java.simpleName)

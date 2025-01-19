@@ -141,7 +141,7 @@ class RemoteDataSource @Inject constructor(
             try {
                 val token = BuildConfig.API_TOKEN
                 val response = apiService.getSearch(
-                    authToken = token,
+                    authToken = "Bearer $token",
                     query = mapOf(
                         "query" to name
                     )

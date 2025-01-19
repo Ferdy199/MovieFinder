@@ -40,7 +40,7 @@ interface ApiService {
         @Field("password") password: String,
     ): LoginResponse
 
-    @GET
+    @GET("/3/search/multi")
     suspend fun getSearch(
         @Header("Authorization") authToken: String,
         @QueryMap query: Map<String, String>

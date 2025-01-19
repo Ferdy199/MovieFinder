@@ -239,8 +239,12 @@ class MovieRepository @Inject constructor(
                         is ApiResponse.Error -> emit(Resource.Error(searchResponse.errorMessage, null))
                         is ApiResponse.Loading -> emit(Resource.Loading)
                         is ApiResponse.Success -> {
-                            val searchList = DataMapper.mapSearchResponsesEntities(searchResponse.data)
-                            emit(Resource.Success(searchList))
+                            if(searchResponse.data != null){
+                                val searchList = DataMapper.mapSearchResponsesEntities(searchResponse.data)
+                                emit(Resource.Success(searchList))
+                            }else{
+                                emit(Resource.Empty)
+                            }
                         }
                     }
                 }
