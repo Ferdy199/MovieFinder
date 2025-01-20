@@ -51,8 +51,8 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         if (activity != null){
-            observeApiResponse(homeViewModel.movie, movieAdapter::setMovie)
-            observeApiResponse(homeViewModel.tvShow, tvShowAdapter::setMovie)
+            observeApiResponse(homeViewModel.movie, movieAdapter::submitList)
+            observeApiResponse(homeViewModel.tvShow, tvShowAdapter::submitList)
 
             recyclerViewConfig(binding.rvMovie, movieAdapter)
             recyclerViewConfig(binding.rvTvShow, tvShowAdapter)

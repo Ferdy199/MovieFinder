@@ -7,11 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.ferdsapp.moviefinder.R
 import com.ferdsapp.moviefinder.application.MyApplication
 import com.ferdsapp.moviefinder.core.data.utils.Resource
 import com.ferdsapp.moviefinder.databinding.FragmentSearchBinding
@@ -50,6 +48,7 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (activity != null){
+            binding.emptyView.root.visibility = View.VISIBLE
           binding.searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
               override fun onQueryTextSubmit(query: String?): Boolean {
                   if (query != null) {
@@ -58,20 +57,24 @@ class SearchFragment : Fragment() {
                               is Resource.Empty -> {
                                   Log.d("SearchFragment", "Empty")
                                   binding.rvSearchLoading.visibility = View.GONE
+                                  binding.emptyView.root.visibility = View.GONE
                               }
 
                               is Resource.Error -> {
                                   Log.d("SearchFragment", "Error: ${searchResponse.message}")
                                   binding.rvSearchLoading.visibility = View.GONE
+                                  binding.emptyView.root.visibility = View.GONE
                               }
 
                               is Resource.Loading -> {
                                   binding.rvSearchLoading.visibility = View.VISIBLE
+                                  binding.emptyView.root.visibility = View.GONE
                               }
 
                               is Resource.Success -> {
-                                  searchAdapter.setMovie(searchResponse.data)
+                                  searchAdapter.submitList(searchResponse.data as List<Any>)
                                   binding.rvSearchLoading.visibility = View.GONE
+                                  binding.emptyView.root.visibility = View.GONE
                               }
                           }
 

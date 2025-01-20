@@ -14,4 +14,11 @@
     <string name="login_logo">login_logo</string>
     <string name="newcomers_here">Newcomers here ?</string>
     <string name="sign_up">Sign up !</string>
+    <string name="image_banner">banner_img\n</string>
+    <string name="desc_gambar_poster">desc_img_poster\n</string>
+    <string name="released_year">released_year\n</string>
+    <string name="rating">rating\n</string>
+    <string name="synopsis">synopsis</string>
+    <string name="description">description</string>
+    <string name="tombol_favorite">tombol_favorite</string>
 </resources>
