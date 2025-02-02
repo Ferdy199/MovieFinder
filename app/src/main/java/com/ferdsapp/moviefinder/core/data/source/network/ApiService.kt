@@ -1,16 +1,17 @@
 package com.ferdsapp.moviefinder.core.data.source.network
 
+import com.ferdsapp.moviefinder.core.data.model.network.detail.DetailResponses
 import com.ferdsapp.moviefinder.core.data.model.network.login.GetTokenLogin
 import com.ferdsapp.moviefinder.core.data.model.network.login.LoginResponse
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.movie.ListMoviePlaying
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.tvShow.ListTvShowPlaying
-import com.ferdsapp.moviefinder.core.data.model.network.search.ListSearchResponse
 import com.ferdsapp.moviefinder.core.data.model.network.search.SearchResponse
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.QueryMap
 
 interface ApiService {
@@ -45,4 +46,11 @@ interface ApiService {
         @Header("Authorization") authToken: String,
         @QueryMap query: Map<String, String>
     ): SearchResponse
+
+    @GET("https://api.themoviedb.org/3/{type}/{id}")
+    suspend fun getDetails(
+        @Header("Authorization") authToken: String,
+        @Path("type") type: String,
+        @Path("id") id: String
+    ): DetailResponses
 }

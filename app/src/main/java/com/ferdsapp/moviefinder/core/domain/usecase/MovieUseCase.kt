@@ -1,5 +1,6 @@
 package com.ferdsapp.moviefinder.core.domain.usecase
 
+import com.ferdsapp.moviefinder.core.data.model.entity.detail.DetailEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.login.LoginEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.movie.MovieEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.search.ListSearchEntity
@@ -19,4 +20,5 @@ interface MovieUseCase {
     fun getLoginToken(): Flow<String>
     fun loginProcess(username: String, password: String): Flow<Resource<LoginEntity>>
     fun getSearch(search: String): Flow<Resource<ArrayList<ListSearchEntity>>>
+    fun getDetailMovie(type: String, id: Int): Flow<Resource<DetailEntity>>
 }

@@ -2,6 +2,7 @@ package com.ferdsapp.moviefinder.core.data.repository
 
 import android.content.SharedPreferences
 import android.util.Log
+import com.ferdsapp.moviefinder.core.data.model.entity.detail.DetailEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.login.LoginEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.movie.MovieEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.search.ListSearchEntity
@@ -29,20 +30,6 @@ class MovieRepository @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
     private val sharedPreferences: SharedPreferences
 ) : IMoveRepository {
-    //init manual injection
-    companion object{
-        @Volatile
-        private var instance: MovieRepository? = null
-
-        fun getInstance(
-            remoteDataSource: RemoteDataSource,
-            sharedPreferences: SharedPreferences
-        ) : MovieRepository {
-            return instance ?: synchronized(this){
-                instance ?: MovieRepository(remoteDataSource, sharedPreferences)
-            }
-        }
-    }
 
     //function here
     override fun getMoviePlaying(): Flow<Resource<ArrayList<MovieEntity>>> {
@@ -252,5 +239,25 @@ class MovieRepository @Inject constructor(
                 emit(Resource.Error(e.message.toString(), null))
             }
         }.flowOn(Dispatchers.IO)
+    }
+
+    override fun getDetailMovie(type: String, id: Int): Flow<Resource<DetailEntity>> {
+        return flow {
+            try {
+                remoteDataSource.getDetail(type, id.toString()).collect { detailResponses ->
+                    when(detailResponses){
+                        is ApiResponse.Empty -> emit(Resource.Empty)
+                        is ApiResponse.Error -> emit(Resource.Error(detailResponses.errorMessage))
+                        is ApiResponse.Loading -> emit(Resource.Loading)
+                        is ApiResponse.Success -> {
+                            val detailEntity = DataMapper.mapDetailMovieEntities(detailResponses.data)
+                            emit(Resource.Success(detailEntity))
+                        }
+                    }
+                }
+            }catch (e: Exception){
+                emit(Resource.Error(e.message.toString()))
+            }
+        }
     }
 }

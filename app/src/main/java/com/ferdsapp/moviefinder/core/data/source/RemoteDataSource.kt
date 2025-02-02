@@ -2,6 +2,7 @@ package com.ferdsapp.moviefinder.core.data.source
 
 import android.util.Log
 import com.ferdsapp.moviefinder.BuildConfig
+import com.ferdsapp.moviefinder.core.data.model.network.detail.DetailResponses
 import com.ferdsapp.moviefinder.core.data.model.network.login.GetTokenLogin
 import com.ferdsapp.moviefinder.core.data.model.network.login.LoginResponse
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.movie.ItemMovePlaying
@@ -156,6 +157,28 @@ class RemoteDataSource @Inject constructor(
                 emit(ApiResponse.Error(e.message.toString(), null))
             }
         }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun getDetail(type: String, id: String) : Flow<ApiResponse<DetailResponses>>{
+        return flow {
+            emit(ApiResponse.Loading)
+            try {
+                val token = BuildConfig.API_TOKEN
+                val response = apiService.getDetails(
+                    authToken = "Bearer $token",
+                    type = type,
+                    id = id
+                )
+                if (response != null){
+                    emit(ApiResponse.Success(response))
+                }else{
+                    emit(ApiResponse.Empty)
+                }
+
+            }catch (e: Exception){
+                emit(ApiResponse.Error(e.message.toString()))
+            }
+        }
     }
 
     private inline fun <reified T> gsonToResponse(json: String) : T? {

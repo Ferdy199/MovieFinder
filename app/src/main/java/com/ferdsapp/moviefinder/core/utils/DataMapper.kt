@@ -1,9 +1,11 @@
 package com.ferdsapp.moviefinder.core.utils
 
+import com.ferdsapp.moviefinder.core.data.model.entity.detail.DetailEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.login.LoginEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.movie.MovieEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.search.ListSearchEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.tvShow.TvShowEntity
+import com.ferdsapp.moviefinder.core.data.model.network.detail.DetailResponses
 import com.ferdsapp.moviefinder.core.data.model.network.login.LoginResponse
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.movie.ItemMovePlaying
 import com.ferdsapp.moviefinder.core.data.model.network.nowPlaying.tvShow.ItemTvShowPlaying
@@ -99,6 +101,29 @@ object DataMapper {
             searchList.add(search)
         }
         return searchList
+    }
+
+    fun mapDetailMovieEntities(input: DetailResponses) : DetailEntity {
+        return DetailEntity(
+            adult = input.adult,
+            backdrop_path = input.backdrop_path,
+            belongs_to_collection = input.belongs_to_collection,
+            budget = input.budget,
+            genres = input.genres,
+            homepage = input.homepage,
+            id = input.id,
+            original_language = input.original_language,
+            original_title = input.original_title,
+            overview = input.overview,
+            poster_path = input.poster_path,
+            title = input.title,
+            vote_average = input.vote_average,
+            popularity = input.popularity,
+            vote_count = input.vote_count,
+            video = input.video,
+            status = input.status,
+            tagline = input.tagline
+        )
     }
 
 }
