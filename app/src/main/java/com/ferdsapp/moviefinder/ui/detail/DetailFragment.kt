@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bumptech.glide.Glide
 import com.ferdsapp.moviefinder.R
 import com.ferdsapp.moviefinder.application.MyApplication
 import com.ferdsapp.moviefinder.core.data.model.entity.detail.DetailEntity
@@ -53,11 +54,23 @@ class DetailFragment : Fragment() {
                 }
             }
             is DetailEntity -> {
+                Log.d("Home Fragment", "posisiton item detail year ${item.release_date}")
                 binding?.apply {
                     detailDescription.text = item.overview
                     detailPosterTxt.text = item.title
                     detailMoviesName.text = item.original_title
                     detailReleasedYear.text = item.release_date
+                    Glide.with(requireActivity().application)
+                        .load("https://image.tmdb.org/t/p/w500" + item.backdrop_path)
+                        .placeholder(R.drawable.logo)
+                        .error(R.drawable.ic_broken_image_24)
+                        .into(detailPosterImg)
+
+                    Glide.with(requireActivity().application)
+                        .load("https://image.tmdb.org/t/p/w500" + item.poster_path)
+                        .placeholder(R.drawable.logo)
+                        .error(R.drawable.ic_broken_image_24)
+                        .into(detailImg)
                 }
             }
         }

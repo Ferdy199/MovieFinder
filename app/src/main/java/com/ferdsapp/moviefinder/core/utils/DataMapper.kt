@@ -117,6 +117,7 @@ object DataMapper {
             original_language = input.original_language,
             original_title = input.original_title,
             overview = input.overview,
+            release_date = input.release_date,
             poster_path = input.poster_path,
             title = input.title,
             vote_average = input.vote_average,
