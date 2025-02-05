@@ -1,5 +1,9 @@
 package com.ferdsapp.moviefinder.core.data.model.entity.tvShow
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class TvShowEntity(
 
     val adult: Boolean = false,
@@ -22,6 +26,8 @@ data class TvShowEntity(
 
     val poster_path: String? = "",
 
+    var media_type: String? = "",
+
     val first_air_date: String,
 
     val name: String,
@@ -29,4 +35,4 @@ data class TvShowEntity(
     val vote_average: Float,
 
     val vote_count: Int
-)
+) : Parcelable

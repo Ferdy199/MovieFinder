@@ -16,14 +16,14 @@ import retrofit2.http.QueryMap
 
 interface ApiService {
 
-    @GET("3/movie/now_playing")
+    @GET("3/trending/movie/week")
     suspend fun getMoviePlayingList(
         @Header("Authorization") authToken: String,
         @QueryMap query: Map<String, String>
     ) : ListMoviePlaying
 
 
-    @GET("3/tv/popular")
+    @GET("3/trending/tv/week")
     suspend fun getTvShowPlayingList(
         @Header("Authorization") authToken: String,
         @QueryMap query: Map<String, String>

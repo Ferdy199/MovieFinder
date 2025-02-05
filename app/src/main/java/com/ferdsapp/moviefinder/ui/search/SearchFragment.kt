@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -14,18 +15,19 @@ import com.ferdsapp.moviefinder.application.MyApplication
 import com.ferdsapp.moviefinder.core.data.utils.Resource
 import com.ferdsapp.moviefinder.databinding.FragmentSearchBinding
 import com.ferdsapp.moviefinder.ui.adapter.MovieAdapter
+import com.ferdsapp.moviefinder.ui.utils.OnItemClickListener
 import com.ferdsapp.moviefinder.viewModel.search.SearchViewModel
 import com.ferdsapp.moviefinder.viewModel.utils.ViewModelFactory
 import javax.inject.Inject
 
-class SearchFragment : Fragment() {
+class SearchFragment : Fragment(), OnItemClickListener {
 
     @Inject
     lateinit var factory: ViewModelFactory
 
     private var _binding : FragmentSearchBinding? = null
     private val binding get() = _binding!!
-    private val searchAdapter: MovieAdapter by lazy { MovieAdapter() }
+    private val searchAdapter: MovieAdapter by lazy { MovieAdapter(this) }
     private val searchViewModel: SearchViewModel by viewModels {
         factory
     }
@@ -96,5 +98,9 @@ class SearchFragment : Fragment() {
             setHasFixedSize(true)
             this.adapter = searchAdapter
         }
+    }
+
+    override fun onItemClick(position: Int, adapter: MovieAdapter) {
+        Toast.makeText(context, "item ke $position", Toast.LENGTH_SHORT).show()
     }
 }

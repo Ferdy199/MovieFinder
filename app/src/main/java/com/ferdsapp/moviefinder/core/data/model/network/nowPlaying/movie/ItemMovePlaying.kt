@@ -13,7 +13,7 @@ data class ItemMovePlaying(
     var genre_ids: ArrayList<Int>,
 
     @field:SerializedName("id")
-    var id: String,
+    var id: Int,
 
     @field:SerializedName("original_language")
     var original_language: String,
@@ -29,6 +29,9 @@ data class ItemMovePlaying(
 
     @field:SerializedName("poster_path")
     var poster_path: String,
+
+    @field:SerializedName("media_type")
+    var media_type: String,
 
     @field:SerializedName("release_date")
     var release_date: String,

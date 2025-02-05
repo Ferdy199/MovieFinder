@@ -2,6 +2,7 @@ package com.ferdsapp.moviefinder.ui.adapter
 
 import android.content.res.Resources
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -13,8 +14,9 @@ import com.ferdsapp.moviefinder.core.data.model.entity.search.ListSearchEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.tvShow.TvShowEntity
 import com.ferdsapp.moviefinder.databinding.ItemListSearchBinding
 import com.ferdsapp.moviefinder.databinding.ItemsListHorizontalBinding
+import com.ferdsapp.moviefinder.ui.utils.OnItemClickListener
 
-class MovieAdapter : ListAdapter<Any, RecyclerView.ViewHolder>(DiffCallback()) {
+class MovieAdapter(private val listener: OnItemClickListener) : ListAdapter<Any, RecyclerView.ViewHolder>(DiffCallback()) {
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
@@ -55,10 +57,13 @@ class MovieAdapter : ListAdapter<Any, RecyclerView.ViewHolder>(DiffCallback()) {
     inner class MovieViewHolder(private val binding: ItemsListHorizontalBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(movie: MovieEntity) {
             with(binding) {
-                tvTitle.text = movie.original_title
+                tvTitle.text = movie.title
                 Glide.with(itemView.context)
                     .load("https://image.tmdb.org/t/p/w500" + movie.poster_path)
                     .into(imgPoster)
+            }
+            binding.root.setOnClickListener {
+                initOnClickListener(itemView, adapterPosition, listener)
             }
         }
     }
@@ -66,10 +71,13 @@ class MovieAdapter : ListAdapter<Any, RecyclerView.ViewHolder>(DiffCallback()) {
     inner class TvShowViewHolder(private val binding: ItemsListHorizontalBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(tvShow: TvShowEntity) {
             with(binding) {
-                tvTitle.text = tvShow.original_name
+                tvTitle.text = tvShow.name
                 Glide.with(itemView.context)
                     .load("https://image.tmdb.org/t/p/w500" + tvShow.poster_path)
                     .into(imgPoster)
+            }
+            binding.root.setOnClickListener {
+                initOnClickListener(itemView, adapterPosition, listener)
             }
         }
     }
@@ -87,6 +95,15 @@ class MovieAdapter : ListAdapter<Any, RecyclerView.ViewHolder>(DiffCallback()) {
                     .error(R.drawable.ic_broken_image_24)
                     .into(imgPoster)
             }
+            binding.root.setOnClickListener {
+                initOnClickListener(itemView, adapterPosition, listener)
+            }
+        }
+    }
+
+    fun initOnClickListener(itemView: View, position: Int, listener: OnItemClickListener){
+        itemView.setOnClickListener {
+            listener.onItemClick(position, this)
         }
     }
 

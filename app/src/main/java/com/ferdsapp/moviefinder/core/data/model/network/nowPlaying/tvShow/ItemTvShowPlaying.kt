@@ -33,6 +33,9 @@ data class ItemTvShowPlaying(
     @field:SerializedName("poster_path")
     val poster_path: String,
 
+    @field:SerializedName("media_type")
+    var media_type: String,
+
     @field:SerializedName("first_air_date")
     val first_air_date: String,
 

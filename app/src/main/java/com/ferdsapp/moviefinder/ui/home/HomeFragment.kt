@@ -6,28 +6,38 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.ferdsapp.moviefinder.R
 import com.ferdsapp.moviefinder.application.MyApplication
+import com.ferdsapp.moviefinder.core.data.model.entity.movie.MovieEntity
+import com.ferdsapp.moviefinder.core.data.model.entity.tvShow.TvShowEntity
 import com.ferdsapp.moviefinder.core.data.utils.Resource
 import com.ferdsapp.moviefinder.databinding.FragmentHomeBinding
 import com.ferdsapp.moviefinder.ui.adapter.MovieAdapter
+import com.ferdsapp.moviefinder.ui.detail.DetailFragment
+import com.ferdsapp.moviefinder.ui.utils.Constant
+import com.ferdsapp.moviefinder.ui.utils.OnItemClickListener
 import com.ferdsapp.moviefinder.viewModel.main.MainViewModel
 import com.ferdsapp.moviefinder.viewModel.utils.ViewModelFactory
 import javax.inject.Inject
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), OnItemClickListener {
 
     @Inject
     lateinit var factory: ViewModelFactory
 
+    @Inject
+    lateinit var detailFragment: DetailFragment
+
     private var _binding : FragmentHomeBinding? = null
     private val binding get() = _binding!!
-    private val movieAdapter: MovieAdapter by lazy { MovieAdapter() }
-    private val tvShowAdapter: MovieAdapter by lazy { MovieAdapter() }
+    private val movieAdapter: MovieAdapter by lazy { MovieAdapter(this) }
+    private val tvShowAdapter: MovieAdapter by lazy { MovieAdapter(this) }
     private val homeViewModel: MainViewModel by viewModels{
        factory
     }
@@ -56,7 +66,6 @@ class HomeFragment : Fragment() {
 
             recyclerViewConfig(binding.rvMovie, movieAdapter)
             recyclerViewConfig(binding.rvTvShow, tvShowAdapter)
-
         }
     }
 
@@ -99,5 +108,54 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onItemClick(position: Int, adapter: MovieAdapter) {
+        when(val item = adapter.currentList[position]){
+            is MovieEntity -> {
+//                Log.d("Home Fragment", "posisiton item movie ${item.original_title}")
+
+
+                homeViewModel.getDetailMovie(item.media_type!!, item.id).observe(viewLifecycleOwner){ detailData ->
+                    when(detailData){
+                        is Resource.Empty -> {
+                            Log.d("Home Fragment", "onItemClick: Empty")
+                            binding.loadingAnimation.visibility = View.GONE
+                        }
+                        is Resource.Error -> {
+                            Log.d("Home Fragment", "onItemClick: Error ${detailData.message}")
+                            binding.loadingAnimation.visibility = View.GONE
+                        }
+                        is Resource.Loading -> {
+                            binding.loadingAnimation.visibility = View.VISIBLE
+                        }
+                        is Resource.Success -> {
+                            Log.d("Home Fragment", "onItemClick: Success")
+                            binding.loadingAnimation.visibility = View.GONE
+                            val bundle = Bundle().apply {
+                                putParcelable(Constant.DATA_ITEM, detailData.data)
+                            }
+                            detailFragment.arguments = bundle
+                            parentFragmentManager.beginTransaction()
+                                .replace(R.id.frame_container, detailFragment)
+                                .addToBackStack(null)
+                                .commit()
+                        }
+                    }
+                }
+            }
+            is TvShowEntity -> {
+                Log.d("Home Fragment", "posisiton item tvShow ${item.original_name}")
+                val bundle = Bundle().apply {
+                    putParcelable(Constant.DATA_ITEM, item)
+                }
+                detailFragment.arguments = bundle
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.frame_container, detailFragment)
+                    .addToBackStack(null)
+                    .commit()
+            }
+        }
+
     }
 }

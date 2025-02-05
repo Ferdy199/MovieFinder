@@ -25,7 +25,6 @@ class MainActivity : AppCompatActivity() {
 
         (application as MyApplication).appComponent.inject(this)
 
-
         val fragmentManager = supportFragmentManager
         val fragment = fragmentManager.findFragmentByTag(HomeFragment::class.java.simpleName)
 

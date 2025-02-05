@@ -36,7 +36,6 @@ class RemoteDataSource @Inject constructor(
                     authToken = "Bearer $token",
                     query = mapOf(
                         "language" to "en-US",
-                        "page" to "1"
                     )
                 )
                 val dataArray = response.results
@@ -63,7 +62,6 @@ class RemoteDataSource @Inject constructor(
                     authToken = "Bearer $token",
                     query = mapOf(
                         "language" to "en-US",
-                        "page" to "1"
                     )
                 )
                 val itemData = response.results
@@ -170,12 +168,15 @@ class RemoteDataSource @Inject constructor(
                     id = id
                 )
                 if (response != null){
+                    Log.d("remoteSource", "getDetail: success")
                     emit(ApiResponse.Success(response))
                 }else{
+                    Log.d("remoteSource", "getDetail: Empty")
                     emit(ApiResponse.Empty)
                 }
 
             }catch (e: Exception){
+                Log.d("remoteSource", "getDetail: Error")
                 emit(ApiResponse.Error(e.message.toString()))
             }
         }
