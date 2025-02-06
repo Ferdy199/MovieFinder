@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import com.bumptech.glide.Glide
 import com.ferdsapp.moviefinder.R
 import com.ferdsapp.moviefinder.application.MyApplication
@@ -59,6 +61,11 @@ class DetailFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        setFragmentResult("emptyView", bundleOf("isBack" to true))
+        super.onDestroy()
     }
 
 }

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.ferdsapp.moviefinder.R
@@ -58,7 +59,15 @@ class SearchFragment : Fragment(), OnItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        showEmptyView(true)
         if (activity != null){
+            setFragmentResultListener("emptyView"){_, bundle ->
+                val isBack = bundle.getBoolean("isBack", false)
+                if (isBack){
+                    showEmptyView(false)
+                }
+            }
+
             binding.searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
               override fun onQueryTextSubmit(query: String?): Boolean {
                   if (query != null) {
@@ -102,7 +111,6 @@ class SearchFragment : Fragment(), OnItemClickListener {
 
           })
         }
-
         with(binding.rvSearch){
             layoutManager = StaggeredGridLayoutManager( 2, StaggeredGridLayoutManager.VERTICAL)
             setHasFixedSize(true)
