@@ -27,6 +27,9 @@ data class ListSearchResponse(
     @field:SerializedName("poster_path")
     var poster_path: String? = "",
 
+    @field:SerializedName("media_type")
+    var media_type: String? = "",
+
     @field:SerializedName("genre_ids")
     var genre_ids: ArrayList<Int>,
 

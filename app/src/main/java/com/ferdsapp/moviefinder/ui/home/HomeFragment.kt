@@ -20,6 +20,7 @@ import com.ferdsapp.moviefinder.core.data.utils.Resource
 import com.ferdsapp.moviefinder.databinding.FragmentHomeBinding
 import com.ferdsapp.moviefinder.ui.adapter.MovieAdapter
 import com.ferdsapp.moviefinder.ui.detail.DetailFragment
+import com.ferdsapp.moviefinder.ui.main.MainActivity
 import com.ferdsapp.moviefinder.ui.utils.Constant
 import com.ferdsapp.moviefinder.ui.utils.OnItemClickListener
 import com.ferdsapp.moviefinder.viewModel.main.MainViewModel
@@ -68,6 +69,16 @@ class HomeFragment : Fragment(), OnItemClickListener {
             recyclerViewConfig(binding.rvTvShow, tvShowAdapter)
         }
     }
+    override fun onItemClick(position: Int, adapter: MovieAdapter) {
+        when(val item = adapter.currentList[position]){
+            is MovieEntity -> {
+                observeDetail(item.media_type!! , item.id)
+            }
+            is TvShowEntity -> {
+                observeDetail(item.media_type!! , item.id)
+            }
+        }
+    }
 
     private fun recyclerViewConfig(recyclerView: RecyclerView, adapter: MovieAdapter){
         with(recyclerView){
@@ -110,52 +121,37 @@ class HomeFragment : Fragment(), OnItemClickListener {
         }
     }
 
-    override fun onItemClick(position: Int, adapter: MovieAdapter) {
-        when(val item = adapter.currentList[position]){
-            is MovieEntity -> {
-//                Log.d("Home Fragment", "posisiton item movie ${item.original_title}")
+    private fun observeDetail(mediaType: String, id: Int){
+        homeViewModel.getDetailMovie(mediaType, id).observe(viewLifecycleOwner){ detailData ->
+            when(detailData){
+                is Resource.Empty -> {
+                    showLoading(false)
+                }
+                is Resource.Error -> {
+                    Log.d("Home Fragment", "onItemClick: Error ${detailData.message}")
+                    showLoading(false)
+                }
+                is Resource.Loading -> {
+                    showLoading(true)
 
-
-                homeViewModel.getDetailMovie(item.media_type!!, item.id).observe(viewLifecycleOwner){ detailData ->
-                    when(detailData){
-                        is Resource.Empty -> {
-                            Log.d("Home Fragment", "onItemClick: Empty")
-                            binding.loadingAnimation.visibility = View.GONE
-                        }
-                        is Resource.Error -> {
-                            Log.d("Home Fragment", "onItemClick: Error ${detailData.message}")
-                            binding.loadingAnimation.visibility = View.GONE
-                        }
-                        is Resource.Loading -> {
-                            binding.loadingAnimation.visibility = View.VISIBLE
-                        }
-                        is Resource.Success -> {
-                            Log.d("Home Fragment", "onItemClick: Success")
-                            binding.loadingAnimation.visibility = View.GONE
-                            val bundle = Bundle().apply {
-                                putParcelable(Constant.DATA_ITEM, detailData.data)
-                            }
-                            detailFragment.arguments = bundle
-                            parentFragmentManager.beginTransaction()
-                                .replace(R.id.frame_container, detailFragment)
-                                .addToBackStack(null)
-                                .commit()
-                        }
+                }
+                is Resource.Success -> {
+                    Log.d("Home Fragment", "onItemClick: Success")
+                    showLoading(false)
+                    val bundle = Bundle().apply {
+                        putParcelable(Constant.DATA_ITEM, detailData.data)
                     }
+                    detailFragment.arguments = bundle
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.frame_container, detailFragment)
+                        .addToBackStack(null)
+                        .commit()
                 }
-            }
-            is TvShowEntity -> {
-                Log.d("Home Fragment", "posisiton item tvShow ${item.original_name}")
-                val bundle = Bundle().apply {
-                    putParcelable(Constant.DATA_ITEM, item)
-                }
-                detailFragment.arguments = bundle
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.frame_container, detailFragment)
-                    .addToBackStack(null)
-                    .commit()
             }
         }
+    }
 
+    private fun showLoading(isLoading: Boolean){
+        (requireActivity() as MainActivity).showLoading(isLoading)
     }
 }

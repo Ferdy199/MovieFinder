@@ -1,6 +1,7 @@
 package com.ferdsapp.moviefinder.ui.main
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.ferdsapp.moviefinder.R
@@ -55,5 +56,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun replaceFragment(fragment: Fragment){
         supportFragmentManager.beginTransaction().replace(R.id.frame_container, fragment).commit()
+    }
+
+    fun showLoading(isLoading: Boolean){
+        if (isLoading){
+            binding.loading.loadingAnimation.visibility = View.VISIBLE
+        }else{
+            binding.loading.loadingAnimation.visibility = View.GONE
+        }
     }
 }

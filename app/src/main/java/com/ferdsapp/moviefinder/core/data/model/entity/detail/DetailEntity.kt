@@ -12,8 +12,6 @@ data class DetailEntity(
 
     var backdrop_path: String? = "",
 
-    var belongs_to_collection: String? = "",
-
     var budget: Int? = 0,
 
     var genres: ArrayList<ItemGenre>? = null,
@@ -26,6 +24,8 @@ data class DetailEntity(
 
     var original_title: String? = "",
 
+    var original_name: String? = "",
+
     var overview: String? = "",
 
     var popularity: Number? = 0.0,
@@ -34,11 +34,15 @@ data class DetailEntity(
 
     var release_date: String? = "",
 
+    var first_air_date: String? = "",
+
     var status: String? = "",
 
     var tagline: String? = "",
 
     var title: String? = "",
+
+    var name: String? = "",
 
     var video: Boolean? = false,
 

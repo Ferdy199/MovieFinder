@@ -17,6 +17,8 @@ data class ListSearchEntity(
 
     var poster_path: String? = "",
 
+    var media_type: String? = "",
+
     var genre_ids: ArrayList<Int>?,
 
     var popularity: Number,

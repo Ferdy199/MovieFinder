@@ -90,6 +90,8 @@ object DataMapper {
 
                 poster_path = it.poster_path,
 
+                media_type = it.media_type,
+
                 genre_ids = it.genre_ids ,
 
                 popularity = it.popularity,
@@ -109,17 +111,19 @@ object DataMapper {
         return DetailEntity(
             adult = input.adult,
             backdrop_path = input.backdrop_path,
-            belongs_to_collection = input.belongs_to_collection,
             budget = input.budget,
             genres = input.genres,
             homepage = input.homepage,
             id = input.id,
             original_language = input.original_language,
             original_title = input.original_title,
+            original_name = input.original_name,
             overview = input.overview,
             release_date = input.release_date,
+            first_air_date = input.first_air_date,
             poster_path = input.poster_path,
             title = input.title,
+            name = input.name,
             vote_average = input.vote_average,
             popularity = input.popularity,
             vote_count = input.vote_count,

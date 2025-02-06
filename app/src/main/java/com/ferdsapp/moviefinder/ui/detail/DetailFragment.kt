@@ -39,27 +39,12 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         when(val item : Any? = arguments?.getParcelable(Constant.DATA_ITEM)){
-            is MovieEntity -> {
-                Log.d("Home Fragment", "posisiton item movie ${item.original_title}")
-                binding?.apply {
-                    detailDescription.text = item.overview
-                    detailMoviesName.text = item.original_title
-                }
-            }
-            is TvShowEntity -> {
-                Log.d("Home Fragment", "posisiton item tvShow ${item.original_name}")
-                binding?.apply {
-                    detailDescription.text = item.overview
-                    detailMoviesName.text = item.original_name
-                }
-            }
             is DetailEntity -> {
-                Log.d("Home Fragment", "posisiton item detail year ${item.release_date}")
                 binding?.apply {
                     detailDescription.text = item.overview
-                    detailPosterTxt.text = item.title
-                    detailMoviesName.text = item.original_title
-                    detailReleasedYear.text = item.release_date
+                    detailPosterTxt.text = if (!item.title.isNullOrEmpty()) item.title else item.name
+                    detailMoviesName.text = if (!item.original_title.isNullOrEmpty()) item.original_title else item.original_name
+                    detailReleasedYear.text = if (!item.release_date.isNullOrEmpty()) item.release_date else item.first_air_date
                     Glide.with(requireActivity().application)
                         .load("https://image.tmdb.org/t/p/w500" + item.backdrop_path)
                         .placeholder(R.drawable.logo)

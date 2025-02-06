@@ -10,9 +10,6 @@ data class DetailResponses(
     @field:SerializedName("backdrop_path")
     var backdrop_path: String? = "",
 
-    @field:SerializedName("belongs_to_collection")
-    var belongs_to_collection: String? = "",
-
     @field:SerializedName("budget")
     var budget: Int? = 0,
 
@@ -31,6 +28,9 @@ data class DetailResponses(
     @field:SerializedName("original_title")
     var original_title: String? = "",
 
+    @field:SerializedName("original_name")
+    var original_name: String? = "",
+
     @field:SerializedName("overview")
     var overview: String? = "",
 
@@ -43,6 +43,9 @@ data class DetailResponses(
     @field:SerializedName("release_date")
     var release_date: String? = "",
 
+    @field:SerializedName("first_air_date")
+    var first_air_date: String? = "",
+
     @field:SerializedName("status")
     var status: String? = "",
 
@@ -51,6 +54,9 @@ data class DetailResponses(
 
     @field:SerializedName("title")
     var title: String? = "",
+
+    @field:SerializedName("name")
+    var name: String? = "",
 
     @field:SerializedName("video")
     var video: Boolean? = false,
