@@ -16,6 +16,6 @@ class MovieInteractor @Inject constructor(private val movieRepository: IMoveRepo
     override fun getTokenValidate() = movieRepository.getRequestTokenValidate()
     override fun getLoginToken() = movieRepository.getTokenLogin()
     override fun loginProcess(username: String, password: String) = movieRepository.loginProcess(username, password)
-    override fun getSearch(search: String): Flow<Resource<ArrayList<ListSearchEntity>>> = movieRepository.getSearch(search)
+    override fun getSearch(search: String): Flow<Resource<List<ListSearchEntity>>> = movieRepository.getSearch(search)
     override fun getDetailMovie(type: String, id: Int): Flow<Resource<DetailEntity>> = movieRepository.getDetailMovie(type, id)
 }

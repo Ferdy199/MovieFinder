@@ -69,7 +69,7 @@ object DataMapper {
         expires_at = input.expires_at
     )
 
-    fun mapSearchResponsesEntities(input: ArrayList<ListSearchResponse>): ArrayList<ListSearchEntity> {
+    fun mapSearchResponsesEntities(input: List<ListSearchResponse>): List<ListSearchEntity> {
         val searchList = ArrayList<ListSearchEntity>()
 
         input.map {

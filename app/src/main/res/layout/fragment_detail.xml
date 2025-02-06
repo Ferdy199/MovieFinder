@@ -17,7 +17,7 @@
             android:scaleType="fitXY"
             android:src="@drawable/ic_broken_image_24"
             android:contentDescription="@string/image_banner"
-            android:alpha="0.7"
+            android:foreground="#4D000000"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -30,25 +30,35 @@
             android:layout_marginEnd="16dp"
             android:layout_marginStart="8dp"
             android:layout_marginBottom="8dp"
-            android:shadowColor="@color/black"
             android:text="@string/title_movie"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="26sp"
+            android:fontFamily="@font/font_family"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/detail_posterImg"
             app:layout_constraintEnd_toStartOf="@+id/detailFavoriteButton"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <ImageView
+        <androidx.cardview.widget.CardView
             android:id="@+id/detail_Img"
-            android:layout_width="110dp"
-            android:layout_height="150dp"
+            android:layout_width="120dp"
+            android:layout_height="160dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:src="@drawable/ic_broken_image_24"
+            app:cardCornerRadius="4dp"
+            app:cardMaxElevation="4dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/detail_posterImg"
-            android:contentDescription="@string/desc_gambar_poster" />
+            app:layout_constraintTop_toBottomOf="@+id/detail_posterImg">
+
+            <ImageView
+                android:id="@+id/poster_Img"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_broken_image_24"
+                android:contentDescription="@string/desc_gambar_poster"/>
+        </androidx.cardview.widget.CardView>
 
         <TextView
             android:id="@+id/detail_movies_name"
@@ -61,6 +71,7 @@
             android:text="@string/app_name"
             android:textAllCaps="true"
             android:textSize="16sp"
+            android:fontFamily="@font/font_family"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/detail_Img"
@@ -83,12 +94,15 @@
 
 
         <RatingBar
+            style="?android:attr/ratingBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="16dp"
+            android:isIndicator="false"
             android:numStars="5"
-            android:scaleX="0.8"
-            android:scaleY="0.8"
+            android:scaleX="1"
+            android:scaleY="1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/detail_Img"
@@ -101,8 +115,9 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="8dp"
-            android:text="@string/synopsis"
+            android:text="@string/overview"
             android:textSize="16sp"
+            android:fontFamily="@font/font_family"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -114,13 +129,15 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:text="@string/description"
             android:textSize="12sp"
+            android:justificationMode="inter_word"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/detail_synopsis" />
+            app:layout_constraintTop_toBottomOf="@+id/detail_synopsis"
+            tools:targetApi="o" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/detailFavoriteButton"

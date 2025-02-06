@@ -29,7 +29,7 @@
                 android:layout_gravity="start"
                 android:layout_margin="0dp"
                 android:contentDescription="@string/toolbar_logo"
-                android:text="Movflix"
+                android:text="@string/tv_toolbar"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 

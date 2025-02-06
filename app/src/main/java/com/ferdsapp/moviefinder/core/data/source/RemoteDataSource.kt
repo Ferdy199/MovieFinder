@@ -134,7 +134,7 @@ class RemoteDataSource @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun getSearch(name:String) : Flow<ApiResponse<ArrayList<ListSearchResponse>>>{
+    suspend fun getSearch(name:String) : Flow<ApiResponse<List<ListSearchResponse>>> {
         return flow {
             emit(ApiResponse.Loading)
             try {
@@ -146,7 +146,10 @@ class RemoteDataSource @Inject constructor(
                     )
                 )
                 if (response.results.isNotEmpty()){
-                    emit(ApiResponse.Success(response.results))
+                    val filterList = response.results.filter {
+                        it.media_type != "person"
+                    }
+                    emit(ApiResponse.Success(filterList))
                 }else{
                     emit(ApiResponse.Empty)
                 }

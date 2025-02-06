@@ -18,7 +18,9 @@
     <string name="desc_gambar_poster">desc_img_poster\n</string>
     <string name="released_year">released_year\n</string>
     <string name="rating">rating\n</string>
-    <string name="synopsis">synopsis</string>
+    <string name="overview">Overview</string>
     <string name="description">description</string>
     <string name="tombol_favorite">tombol_favorite</string>
+    <string name="tv_empty_view">Nothing Found Here..</string>
+    <string name="tv_toolbar">Movflix</string>
 </resources>

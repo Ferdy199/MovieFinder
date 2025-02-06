@@ -20,6 +20,6 @@ interface IMoveRepository {
     fun saveRequestToken(token: String)
     fun getTokenLogin(): Flow<String>
     fun loginProcess(username: String, password: String): Flow<Resource<LoginEntity>>
-    fun getSearch(search: String): Flow<Resource<ArrayList<ListSearchEntity>>>
+    fun getSearch(search: String): Flow<Resource<List<ListSearchEntity>>>
     fun getDetailMovie(type: String, id: Int): Flow<Resource<DetailEntity>>
 }

@@ -217,7 +217,7 @@ class MovieRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun getSearch(search: String): Flow<Resource<ArrayList<ListSearchEntity>>> {
+    override fun getSearch(search: String): Flow<Resource<List<ListSearchEntity>>> {
         return flow {
             try {
                 remoteDataSource.getSearch(search).collect { searchResponse ->

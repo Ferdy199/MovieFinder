@@ -57,7 +57,7 @@ class DetailFragment : Fragment() {
                         .load("https://image.tmdb.org/t/p/w500" + item.poster_path)
                         .placeholder(R.drawable.logo)
                         .error(R.drawable.ic_broken_image_24)
-                        .into(detailImg)
+                        .into(posterImg)
                 }
             }
         }
