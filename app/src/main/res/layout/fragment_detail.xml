@@ -35,6 +35,10 @@
             android:textSize="26sp"
             android:fontFamily="@font/font_family"
             android:textStyle="bold"
+            android:shadowColor="#000000"
+            android:shadowRadius="10"
+            android:shadowDx="0"
+            android:shadowDy="0"
             app:layout_constraintBottom_toBottomOf="@+id/detail_posterImg"
             app:layout_constraintEnd_toStartOf="@+id/detailFavoriteButton"
             app:layout_constraintStart_toStartOf="parent" />
