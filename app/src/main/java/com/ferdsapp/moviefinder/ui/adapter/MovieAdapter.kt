@@ -9,9 +9,12 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.ferdsapp.moviefinder.R
+import com.ferdsapp.moviefinder.core.data.model.entity.detail.DetailEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.movie.MovieEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.search.ListSearchEntity
 import com.ferdsapp.moviefinder.core.data.model.entity.tvShow.TvShowEntity
+import com.ferdsapp.moviefinder.core.data.model.network.utils.ItemGenre
+import com.ferdsapp.moviefinder.databinding.ItemGenreBinding
 import com.ferdsapp.moviefinder.databinding.ItemListSearchBinding
 import com.ferdsapp.moviefinder.databinding.ItemsListHorizontalBinding
 import com.ferdsapp.moviefinder.ui.utils.OnItemClickListener
@@ -23,6 +26,7 @@ class MovieAdapter(private val listener: OnItemClickListener) : ListAdapter<Any,
             is MovieEntity -> ITEM_MOVIE
             is TvShowEntity -> ITEM_TV_SHOW
             is ListSearchEntity -> ITEM_SEARCH
+            is ItemGenre -> ITEM_GENRE
             else -> throw IllegalArgumentException("Unknown item type")
         }
     }
@@ -42,6 +46,10 @@ class MovieAdapter(private val listener: OnItemClickListener) : ListAdapter<Any,
                 val binding = ItemListSearchBinding.inflate(inflater, parent, false)
                 SearchViewHolder(binding)
             }
+            ITEM_GENRE -> {
+                val binding = ItemGenreBinding.inflate(inflater, parent, false)
+                GenreViewHolder(binding)
+            }
             else -> throw IllegalArgumentException("Invalid view type")
         }
     }
@@ -51,6 +59,7 @@ class MovieAdapter(private val listener: OnItemClickListener) : ListAdapter<Any,
             is MovieViewHolder -> holder.bind(getItem(position) as MovieEntity)
             is TvShowViewHolder -> holder.bind(getItem(position) as TvShowEntity)
             is SearchViewHolder -> holder.bind(getItem(position) as ListSearchEntity)
+            is GenreViewHolder -> holder.bind(getItem(position) as ItemGenre)
         }
     }
 
@@ -101,6 +110,14 @@ class MovieAdapter(private val listener: OnItemClickListener) : ListAdapter<Any,
         }
     }
 
+    inner class GenreViewHolder(private val binding: ItemGenreBinding) : RecyclerView.ViewHolder(binding.root){
+        fun bind(genre: ItemGenre){
+            with(binding){
+                tvGenre.text = genre.name
+            }
+        }
+    }
+
     fun initOnClickListener(itemView: View, position: Int, listener: OnItemClickListener){
         itemView.setOnClickListener {
             listener.onItemClick(position, this)
@@ -111,6 +128,7 @@ class MovieAdapter(private val listener: OnItemClickListener) : ListAdapter<Any,
         private const val ITEM_MOVIE = 1
         private const val ITEM_TV_SHOW = 2
         private const val ITEM_SEARCH = 3
+        private const val ITEM_GENRE = 4
     }
 
     class DiffCallback : DiffUtil.ItemCallback<Any>() {

@@ -23,4 +23,5 @@
     <string name="tombol_favorite">tombol_favorite</string>
     <string name="tv_empty_view">Nothing Found Here..</string>
     <string name="tv_toolbar">Movflix</string>
+    <string name="tv_genre">Genre</string>
 </resources>

@@ -1,28 +1,39 @@
 package com.ferdsapp.moviefinder.ui.detail
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
 import com.ferdsapp.moviefinder.R
 import com.ferdsapp.moviefinder.application.MyApplication
 import com.ferdsapp.moviefinder.core.data.model.entity.detail.DetailEntity
-import com.ferdsapp.moviefinder.core.data.model.entity.movie.MovieEntity
-import com.ferdsapp.moviefinder.core.data.model.entity.tvShow.TvShowEntity
 import com.ferdsapp.moviefinder.databinding.FragmentDetailBinding
+import com.ferdsapp.moviefinder.ui.adapter.MovieAdapter
 import com.ferdsapp.moviefinder.ui.utils.Constant
+import com.ferdsapp.moviefinder.ui.utils.OnItemClickListener
+import com.google.android.flexbox.FlexDirection
+import com.google.android.flexbox.FlexWrap
+import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.android.flexbox.JustifyContent
 
 
-class DetailFragment : Fragment() {
+class DetailFragment : Fragment(), OnItemClickListener {
 
     private var _binding : FragmentDetailBinding? = null
-    val binding get() = _binding
+    private val binding get() = _binding
+    private val genreAdapter: MovieAdapter by lazy { MovieAdapter(this) }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -40,9 +51,16 @@ class DetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        when(val item : Any? = arguments?.getParcelable(Constant.DATA_ITEM)){
+        val item : DetailEntity? = BundleCompat.getParcelable(arguments ?: Bundle(), Constant.DATA_ITEM,  DetailEntity::class.java)
+        when(item){
             is DetailEntity -> {
                 binding?.apply {
+                    val ratingValue = (item.vote_average?.toFloat()!! / 10f) * 5
+                    ratingBar.stepSize = 0.5f
+                    ratingBar.post {
+                        ratingBar.rating = ratingValue
+                    }
+
                     detailDescription.text = item.overview
                     detailPosterTxt.text = if (!item.title.isNullOrEmpty()) item.title else item.name
                     detailMoviesName.text = if (!item.original_title.isNullOrEmpty()) item.original_title else item.original_name
@@ -58,6 +76,19 @@ class DetailFragment : Fragment() {
                         .placeholder(R.drawable.logo)
                         .error(R.drawable.ic_broken_image_24)
                         .into(posterImg)
+
+                    genreAdapter.submitList(item.genres as List<Any>)
+                }
+
+                with(binding!!.rvGenre){
+                    val flexBox = FlexboxLayoutManager(context).apply {
+                        flexDirection = FlexDirection.ROW
+                        flexWrap = FlexWrap.WRAP
+                        justifyContent = JustifyContent.FLEX_START
+                    }
+                    layoutManager = flexBox
+                    setHasFixedSize(true)
+                    this.adapter = genreAdapter
                 }
             }
         }
@@ -66,6 +97,10 @@ class DetailFragment : Fragment() {
     override fun onDestroy() {
         setFragmentResult("emptyView", bundleOf("isBack" to true))
         super.onDestroy()
+    }
+
+    override fun onItemClick(position: Int, adapter: MovieAdapter) {
+        TODO("Not yet implemented")
     }
 
 }

@@ -65,6 +65,8 @@ class SearchFragment : Fragment(), OnItemClickListener {
                 val isBack = bundle.getBoolean("isBack", false)
                 if (isBack){
                     showEmptyView(false)
+                }else{
+                    showEmptyView(true)
                 }
             }
 
